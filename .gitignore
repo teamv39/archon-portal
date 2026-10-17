@@ -11,10 +11,6 @@ node_modules
 dist
 dist-ssr
 *.local
-backend/src/*.js
-backend/src/*.js.map
-backend/src/*.d.ts
-backend/src/*.d.ts.map
 
 # Editor directories and files
 .vscode/*
