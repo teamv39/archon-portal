@@ -83,11 +83,21 @@ export function ServicesPage() {
         ),
         cell: ({ row }) => (
           <div className="py-1">
-            <div className="font-medium text-foreground hover:text-primary transition-colors">
-              {row.original.name}
+            <div className="font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2">
+              <span>{row.original.name}</span>
+              {row.original.tier !== undefined && (
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono border">
+                  Tier {row.original.tier}
+                </span>
+              )}
             </div>
-            <div className="text-xs font-mono text-muted-foreground mt-0.5">
-              {row.original.id}
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
+              <span className="font-mono">{row.original.id}</span>
+              {row.original.endpoints && row.original.endpoints.length > 0 && (
+                <span className="text-[11px] font-mono text-primary font-medium">
+                  • {row.original.endpoints[0]}
+                </span>
+              )}
             </div>
           </div>
         ),
@@ -96,7 +106,8 @@ export function ServicesPage() {
           const val = String(filterValue).toLowerCase()
           const name = String(row.original.name).toLowerCase()
           const id = String(row.original.id).toLowerCase()
-          return name.includes(val) || id.includes(val)
+          const endpoints = (row.original.endpoints || []).join(' ').toLowerCase()
+          return name.includes(val) || id.includes(val) || endpoints.includes(val)
         },
       },
       {

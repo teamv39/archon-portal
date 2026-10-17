@@ -2,6 +2,9 @@ import Fastify from 'fastify'
 import helmet from '@fastify/helmet'
 import cors from '@fastify/cors'
 import rateLimit from '@fastify/rate-limit'
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const fastify = Fastify({
     logger: {
@@ -75,84 +78,112 @@ const start = async () => {
     }
   })
 
-  const mockServices = [
-    {
-      id: 'auth-service',
-      name: 'Сервис аутентификации (Auth Service)',
-      owner: 'Команда безопасности',
-      stack: 'Node.js / TypeScript',
-      driftStatus: 'in_sync',
-      dependenciesCount: 4,
-      description: 'Управление пользователями, JWT-сессиями и OAuth2/OIDC провайдерами.',
-    },
-    {
-      id: 'payment-gateway',
-      name: 'Платежный шлюз (Payment Gateway)',
-      owner: 'Команда биллинга',
-      stack: 'Go',
-      driftStatus: 'drift_detected',
-      dependenciesCount: 7,
-      description: 'Обработка транзакций, взаимодействие с эквайрингом и фискализация чеков.',
-    },
-    {
-      id: 'notification-service',
-      name: 'Сервис уведомлений (Notification Service)',
-      owner: 'Команда платформы',
-      stack: 'Python / FastAPI',
-      driftStatus: 'in_sync',
-      dependenciesCount: 3,
-      description: 'Отправка email, push-уведомлений и Telegram-сообщений через брокер сообщений.',
-    },
-    {
-      id: 'archon-core-service',
-      name: 'Инженерное ядро (Archon Core)',
-      owner: 'Команда платформы',
-      stack: 'Go',
-      driftStatus: 'in_sync',
-      dependenciesCount: 12,
-      description: 'AI-native Source of Truth, парсинг архитектурных схем и docs-as-code моделей.',
-    },
-    {
-      id: 'catalog-service',
-      name: 'Каталог продуктов (Catalog Service)',
-      owner: 'Команда витрины',
-      stack: 'Java / Spring Boot',
-      driftStatus: 'drift_detected',
-      dependenciesCount: 5,
-      description: 'Хранение и управление карточками товаров, категориями и остатками.',
-    },
-    {
-      id: 'analytics-aggregator',
-      name: 'Агрегатор аналитики (Analytics Aggregator)',
-      owner: 'Команда данных',
-      stack: 'Python / ClickHouse',
-      driftStatus: 'in_sync',
-      dependenciesCount: 2,
-      description: 'Сбор продуктовых метрик, построение воронок и агрегация событий кликстрима.',
-    },
-    {
-      id: 'inventory-service',
-      name: 'Сервис инвентаризации (Inventory Service)',
-      owner: 'Команда логистики',
-      stack: 'Go',
-      driftStatus: 'drift_detected',
-      dependenciesCount: 6,
-      description: 'Учет складских остатков, бронирование позиций и интеграция с WMS.',
-    },
-  ]
+  const __filename = fileURLToPath(import.meta.url)
+  const __dirname = path.dirname(__filename)
+
+  function getDataFilePath(): string {
+    const candidates = [
+      path.resolve(__dirname, '../data/mock_mcp_data.json'),
+      path.resolve(__dirname, '../../backend/data/mock_mcp_data.json'),
+      path.resolve(process.cwd(), 'backend/data/mock_mcp_data.json'),
+      path.resolve(process.cwd(), 'data/mock_mcp_data.json'),
+    ]
+    for (const p of candidates) {
+      if (fs.existsSync(p)) return p
+    }
+    throw new Error(`mock_mcp_data.json not found in candidates: ${candidates.join(', ')}`)
+  }
+
+  interface RawOutgoingCall {
+    target: string
+    protocol: string
+    contract?: string
+    topic?: string
+    is_defect_cycle?: boolean
+  }
+
+  interface RawContract {
+    service: string
+    endpoint: string
+    method: string
+    protocol: string
+    description: string
+    architectural_constraints?: string[]
+  }
+
+  interface RawService {
+    id: string
+    name: string
+    tier: number
+    language: string
+    framework: string
+    repo_url: string
+    owner_team: string
+    outgoing_calls: RawOutgoingCall[]
+  }
+
+  interface MockDataset {
+    services: RawService[]
+    contracts: Record<string, RawContract>
+    validate_dependency_scenarios: Record<string, unknown>
+  }
+
+  function getServices() {
+    const filePath = getDataFilePath()
+    const content = fs.readFileSync(filePath, 'utf-8')
+    const data: MockDataset = JSON.parse(content)
+
+    const descriptions: Record<string, string> = {
+      'order-service': 'Прием и валидация заказов, оркестрация чекаута, вызовы инвентаря, доставки и биллинга.',
+      'billing-service': 'Формирование инвойсов, процессинг платежей и публикация событий в брокер сообщений Kafka.',
+      'inventory-service': 'Учет товарных остатков, резервирование позиций и валидация наличия на складе.',
+      'delivery-service': 'Управление логистикой, расчет слотов доставки и регистрация курьерских заявок.',
+      'notification-service': 'Асинхронная отправка транзакционных уведомлений, интеграция с Kafka топиками.',
+      'auth-service': 'Централизованная аутентификация, валидация токенов доступа и управление ролями (Tier 0).',
+    }
+
+    return data.services.map((s) => {
+      const contracts = Object.values(data.contracts).filter((c) => c.service === s.id)
+      const endpoints = contracts.map((c) => `${c.method} ${c.endpoint}`)
+      const isDrift = s.outgoing_calls.some((c) => c.is_defect_cycle)
+
+      return {
+        id: s.id,
+        name: s.name,
+        owner: s.owner_team,
+        stack: `${s.language} / ${s.framework}`,
+        driftStatus: isDrift ? 'drift_detected' : 'in_sync',
+        dependenciesCount: s.outgoing_calls.length,
+        description: descriptions[s.id] || `Микросервис ${s.name} (${s.owner_team}).`,
+        tier: s.tier,
+        repoUrl: s.repo_url,
+        outgoingCalls: s.outgoing_calls,
+        contracts,
+        endpoints,
+      }
+    })
+  }
 
   fastify.get('/api/services', async () => {
-    return mockServices
+    return getServices()
   })
 
   fastify.get<{ Params: { id: string } }>('/api/services/:id', async (request, reply) => {
     const { id } = request.params
-    const service = mockServices.find((s) => s.id === id)
+    const services = getServices()
+    const service = services.find((s) => s.id === id)
     if (!service) {
       reply.status(404)
       return { error: 'Not Found', message: `Сервис ${id} не найден` }
     }
     return service
+  })
+
+  fastify.get('/api/contracts', async () => {
+    const filePath = getDataFilePath()
+    const content = fs.readFileSync(filePath, 'utf-8')
+    const data: MockDataset = JSON.parse(content)
+    return data.contracts
   })
 
   try {
