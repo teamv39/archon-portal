@@ -1,0 +1,130 @@
+{
+  "viewId": "ecommerce-containers",
+  "title": "E-Commerce System Containers & Dependencies",
+  "nodes": [
+    {
+      "id": "order-service",
+      "title": "Order Service",
+      "type": "service",
+      "tier": 2,
+      "driftStatus": "in_sync"
+    },
+    {
+      "id": "billing-service",
+      "title": "Billing Service",
+      "type": "service",
+      "tier": 2,
+      "driftStatus": "drift_detected"
+    },
+    {
+      "id": "inventory-service",
+      "title": "Inventory Service",
+      "type": "service",
+      "tier": 2,
+      "driftStatus": "in_sync"
+    },
+    {
+      "id": "delivery-service",
+      "title": "Delivery Service",
+      "type": "service",
+      "tier": 2,
+      "driftStatus": "in_sync"
+    },
+    {
+      "id": "notification-service",
+      "title": "Notification Service",
+      "type": "service",
+      "tier": 2,
+      "driftStatus": "in_sync"
+    },
+    {
+      "id": "auth-service",
+      "title": "Auth Service",
+      "type": "service",
+      "tier": 0,
+      "driftStatus": "in_sync"
+    },
+    {
+      "id": "auth-db",
+      "title": "auth-db (PostgreSQL)",
+      "type": "database"
+    },
+    {
+      "id": "topic-order-paid",
+      "title": "Kafka: order.paid",
+      "type": "queue"
+    }
+  ],
+  "edges": [
+    {
+      "source": "order-service",
+      "target": "billing-service",
+      "protocol": "REST",
+      "isDrift": false,
+      "label": "POST /api/v1/invoices"
+    },
+    {
+      "source": "billing-service",
+      "target": "order-service",
+      "protocol": "REST",
+      "isDrift": true,
+      "label": "GET /api/v1/orders/:id (ДЕФЕКТ 1: ЦИКЛ)"
+    },
+    {
+      "source": "order-service",
+      "target": "inventory-service",
+      "protocol": "REST",
+      "isDrift": false,
+      "label": "GET /api/v1/items/{sku}/availability"
+    },
+    {
+      "source": "order-service",
+      "target": "delivery-service",
+      "protocol": "REST",
+      "isDrift": false,
+      "label": "POST /api/v1/deliveries"
+    },
+    {
+      "source": "order-service",
+      "target": "auth-service",
+      "protocol": "REST",
+      "isDrift": false,
+      "label": "Validate Token"
+    },
+    {
+      "source": "billing-service",
+      "target": "topic-order-paid",
+      "protocol": "KAFKA",
+      "isDrift": false,
+      "label": "Publish order.paid"
+    },
+    {
+      "source": "topic-order-paid",
+      "target": "notification-service",
+      "protocol": "KAFKA",
+      "isDrift": false,
+      "label": "Consume order.paid"
+    },
+    {
+      "source": "auth-service",
+      "target": "auth-db",
+      "protocol": "TCP",
+      "isDrift": false,
+      "label": "Владелец БД"
+    },
+    {
+      "source": "order-service",
+      "target": "auth-db",
+      "protocol": "TCP",
+      "isDrift": true,
+      "label": "Direct DB Query (ДЕФЕКТ 3: SHARED DB)"
+    },
+    {
+      "source": "billing-service",
+      "target": "auth-db",
+      "protocol": "TCP",
+      "isDrift": true,
+      "label": "Direct DB Query (ДЕФЕКТ 3: SHARED DB)"
+    }
+  ]
+}

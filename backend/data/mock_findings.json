@@ -1,0 +1,70 @@
+[
+  {
+    "id": "FINDING-101",
+    "serviceId": "billing-service",
+    "title": "Циклическая зависимость: billing-service ↔ order-service",
+    "category": "CIRCULAR_DEPENDENCY",
+    "severity": "CRITICAL",
+    "status": "NEW",
+    "createdAt": "2026-10-17T18:30:00.000Z",
+    "evidence": {
+      "docFile": "docs/architecture/sample-architecture.md",
+      "docQuote": "Сервис billing-service НЕ должен синхронно вызывать order-service (предотвращение цикла). Связь должна быть асинхронной через Kafka.",
+      "codeFile": "src/client/OrderClient.java",
+      "codeLines": "L38-L45",
+      "codeSnippet": "public OrderDto getOrder(String orderId) {\n    // Дефект: синхронный HTTP вызов обратно в order-service\n    return restTemplate.getForObject(\"http://order-service/api/v1/orders/\" + orderId, OrderDto.class);\n}",
+      "verdict": "Синтаксический AST-разбор зафиксировал синхронный REST-вызов order-service из billing-service. В графе обнаружен запрещенный цикл длины 2 (order-service -> billing-service -> order-service)."
+    }
+  },
+  {
+    "id": "FINDING-102",
+    "serviceId": "order-service",
+    "title": "Недокументированный эндпоинт DELETE /api/v1/orders/:id/force",
+    "category": "UNDOCUMENTED_ENDPOINT",
+    "severity": "HIGH",
+    "status": "NEW",
+    "createdAt": "2026-10-17T19:15:00.000Z",
+    "evidence": {
+      "docFile": "docs/api/orders-openapi.yaml",
+      "docQuote": "paths:\n  /api/v1/orders:\n    post:\n      summary: Оформление заказа\n  /api/v1/orders/{id}:\n    get:\n      summary: Получение данных заказа",
+      "codeFile": "src/controllers/OrderController.kt",
+      "codeLines": "L72-L78",
+      "codeSnippet": "@DeleteMapping(\"/api/v1/orders/{id}/force\")\nfun forceDeleteOrder(@PathVariable id: String): ResponseEntity<Void> {\n    orderRepository.deleteById(id)\n    return ResponseEntity.noContent().build()\n}",
+      "verdict": "Обнаружен публичный маршрут DELETE /api/v1/orders/{id}/force в коде контроллера, который полностью отсутствует в OpenAPI спецификации и документации."
+    }
+  },
+  {
+    "id": "FINDING-103",
+    "serviceId": "order-service",
+    "title": "Прямое подключение к чужой базе данных auth-db (Shared DB)",
+    "category": "SHARED_DATABASE",
+    "severity": "HIGH",
+    "status": "CONFIRMED",
+    "createdAt": "2026-10-17T15:00:00.000Z",
+    "evidence": {
+      "docFile": "docs/architecture/sample-architecture.md",
+      "docQuote": "База данных auth-db является изолированным приватным хранилищем auth-service (Tier 0). Прямой доступ других сервисов к auth-db запрещен.",
+      "codeFile": "src/config/DatabaseConfig.kt",
+      "codeLines": "L25-L31",
+      "codeSnippet": "datasource.url = \"jdbc:postgresql://auth-db:5432/auth_users\"\ndatasource.username = \"order_service_ro\"\ndatasource.password = env(\"AUTH_DB_PASS\")",
+      "verdict": "Сервис обращается напрямую к таблицам пользователей в базе auth-db в обход REST/gRPC контрактов сервиса аутентификации."
+    }
+  },
+  {
+    "id": "FINDING-104",
+    "serviceId": "auth-service",
+    "title": "Нарушение слоев архитектуры: вызов из Tier 0 в Tier 2",
+    "category": "LAYERING_VIOLATION",
+    "severity": "MEDIUM",
+    "status": "RISK_ACCEPTED",
+    "createdAt": "2026-10-16T12:00:00.000Z",
+    "evidence": {
+      "docFile": "docs/architecture/sample-architecture.md",
+      "docQuote": "Политика TIER_DOWNWARDS_ONLY: Security/IAM сервис (Tier 0) не должен иметь исходящих зависимостей на сервисы бизнес-домена (Tier 2).",
+      "codeFile": "src/services/AuditService.java",
+      "codeLines": "L64-L70",
+      "codeSnippet": "public void notifyDelivery(String userId) {\n    deliveryClient.pingStatus(userId);\n}",
+      "verdict": "Инфраструктурный сервис безопасности вызывает сервис доставки. Риск согласован до 31.12.2026 (миграция на Kafka топик auth.events)."
+    }
+  }
+]
