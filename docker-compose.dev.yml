@@ -1,0 +1,23 @@
+services:
+  # Контейнер с бэкендом (Fastify BFF)
+  bff:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.bff
+    image: archon-bff:dev
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: development
+      PORT: 5000
+
+  # Контейнер с фронтендом (React SPA + Nginx)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    image: archon-frontend:dev
+    ports:
+      - "8080:80"
+    depends_on:
+      - bff
