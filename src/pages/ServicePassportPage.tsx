@@ -4,6 +4,15 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 import {
   ArrowLeft,
   CheckCircle2,
@@ -13,9 +22,13 @@ import {
   Cpu,
   GitFork,
   RefreshCw,
-  Code2,
-  Radio,
   FileCode,
+  Radio,
+  Database,
+  ExternalLink,
+  BookOpen,
+  Code2,
+  ShieldCheck,
   ShieldAlert,
 } from "lucide-react"
 
@@ -35,12 +48,7 @@ export function ServicePassportPage() {
           <Skeleton className="h-8 w-80" />
           <Skeleton className="h-4 w-96" />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Skeleton className="h-28" />
-          <Skeleton className="h-28" />
-          <Skeleton className="h-28" />
-          <Skeleton className="h-28" />
-        </div>
+        <Skeleton className="h-10 w-96" />
         <Skeleton className="h-64" />
       </div>
     )
@@ -52,7 +60,7 @@ export function ServicePassportPage() {
         <AlertTriangle className="h-12 w-12 text-destructive mb-3" />
         <h2 className="text-xl font-semibold mb-2">Сервис не найден</h2>
         <p className="text-muted-foreground text-sm mb-6">
-          Не удалось загрузить данные паспорта сервиса &laquo;{id}&raquo;. Возможно, сервис был удален или сервер недоступен.
+          Не удалось загрузить данные паспорта сервиса &laquo;{id}&raquo;.
         </p>
         <div className="flex gap-3">
           <Button variant="outline" onClick={() => navigate('/services')}>
@@ -69,10 +77,13 @@ export function ServicePassportPage() {
   }
 
   const isDriftDetected = service.driftStatus === 'drift_detected'
+  const outgoingCalls = service.outgoingCalls || []
+  const contracts = service.contracts || []
+  const databases = service.databases || []
+  const brokerTopics = service.brokerTopics || []
 
   return (
     <div className="space-y-6 max-w-5xl">
-      {/* Navigation & Header */}
       <div>
         <Button
           variant="ghost"
@@ -119,200 +130,337 @@ export function ServicePassportPage() {
         </div>
       </div>
 
-      {/* Info Cards Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5">
-              <Users className="h-4 w-4" /> Владелец
-            </CardDescription>
-            <CardTitle className="text-base font-medium">{service.owner}</CardTitle>
-          </CardHeader>
-          <CardContent className="text-xs text-muted-foreground">
-            Ответственная команда
-          </CardContent>
-        </Card>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="bg-muted p-1">
+          <TabsTrigger value="overview" className="gap-2">
+            <BookOpen className="h-4 w-4" />
+            Обзор
+          </TabsTrigger>
+          <TabsTrigger value="dependencies" className="gap-2">
+            <GitFork className="h-4 w-4" />
+            Зависимости ({outgoingCalls.length})
+          </TabsTrigger>
+          <TabsTrigger value="contracts" className="gap-2">
+            <FileCode className="h-4 w-4" />
+            Контракты ({contracts.length})
+          </TabsTrigger>
+        </TabsList>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5">
-              <Cpu className="h-4 w-4" /> Стек технологий
-            </CardDescription>
-            <CardTitle className="text-base font-medium">{service.stack}</CardTitle>
-          </CardHeader>
-          <CardContent className="text-xs text-muted-foreground">
-            Базовый рантайм
-          </CardContent>
-        </Card>
+        <TabsContent value="overview" className="space-y-6 mt-0">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription className="flex items-center gap-1.5">
+                  <Users className="h-4 w-4" /> Владелец
+                </CardDescription>
+                <CardTitle className="text-base font-medium">{service.owner}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground">
+                Команда разработки
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5">
-              <GitFork className="h-4 w-4" /> Исходящие связи
-            </CardDescription>
-            <CardTitle className="text-base font-medium">{service.dependenciesCount}</CardTitle>
-          </CardHeader>
-          <CardContent className="text-xs text-muted-foreground">
-            Зависимости в графе
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription className="flex items-center gap-1.5">
+                  <Cpu className="h-4 w-4" /> Стек
+                </CardDescription>
+                <CardTitle className="text-base font-medium">{service.stack}</CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground">
+                Язык и фреймворк
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription className="flex items-center gap-1.5">
-              <Code2 className="h-4 w-4" /> Репозиторий
-            </CardDescription>
-            <CardTitle className="text-sm font-mono truncate" title={service.repoUrl}>
-              {service.repoUrl ? service.repoUrl.replace('github.com/', '') : 'Не указан'}
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="text-xs text-muted-foreground">
-            Git репозиторий кода
-          </CardContent>
-        </Card>
-      </div>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription className="flex items-center gap-1.5">
+                  <Code2 className="h-4 w-4" /> Репозиторий
+                </CardDescription>
+                <CardTitle className="text-sm font-mono truncate" title={service.repoUrl}>
+                  {service.repoUrl ? (
+                    <a
+                      href={`https://${service.repoUrl}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline flex items-center gap-1"
+                    >
+                      {service.repoUrl.replace('github.com/', '')}
+                      <ExternalLink className="h-3 w-3 shrink-0" />
+                    </a>
+                  ) : (
+                    'Не указан'
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground">
+                Исходный код
+              </CardContent>
+            </Card>
 
-      {/* Description & Passport details */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">Паспорт сервиса</CardTitle>
-          <CardDescription>
-            Сводная информация из docs-as-code модели и архитектурного Source of Truth
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1.5">
-              Назначение и описание
-            </h4>
-            <p className="text-sm leading-relaxed">
-              {service.description || "Описание для этого сервиса пока не заполнено в архитектурном манифесте."}
-            </p>
+            <Card>
+              <CardHeader className="pb-2">
+                <CardDescription className="flex items-center gap-1.5">
+                  <BookOpen className="h-4 w-4" /> Документация
+                </CardDescription>
+                <CardTitle className="text-sm font-medium">
+                  {service.docsUrl ? (
+                    <a
+                      href={service.docsUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline flex items-center gap-1"
+                    >
+                      Archon Docs
+                      <ExternalLink className="h-3 w-3 shrink-0" />
+                    </a>
+                  ) : (
+                    'Отсутствует'
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="text-xs text-muted-foreground">
+                Docs-as-code спецификация
+              </CardContent>
+            </Card>
           </div>
 
-          <div className="border-t pt-4">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Статус архитектурного соответствия
-            </h4>
-            {isDriftDetected ? (
-              <div className="rounded-md border border-destructive/30 bg-destructive/10 p-3.5 text-sm flex items-start gap-3 text-destructive">
-                <AlertTriangle className="h-5 w-5 mt-0.5 shrink-0" />
-                <div>
-                  <p className="font-semibold">Обнаружено расхождение с архитектурной политикой No-Cycles</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Сервис содержит исходящие вызовы, создающие циклическую зависимость (цикл L=2).
-                    Рекомендуется использовать асинхронные события брокера сообщений.
-                  </p>
-                </div>
-              </div>
-            ) : (
-              <div className="rounded-md border border-emerald-500/20 bg-emerald-500/10 p-3.5 text-sm flex items-start gap-3 text-emerald-600 dark:text-emerald-400">
-                <CheckCircle2 className="h-5 w-5 mt-0.5 shrink-0" />
-                <div>
-                  <p className="font-semibold">Полное соответствие Source of Truth</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    Архитектурная модель в репозитории полностью синхронизирована с фактическим состоянием рантайма.
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Описание сервиса</CardTitle>
+              <CardDescription>
+                Назначение и зона ответственности в доменной архитектуре
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm leading-relaxed">
+                {service.description || "Описание для этого сервиса пока не заполнено."}
+              </p>
 
-      {/* Contracts & Endpoints */}
-      {service.contracts && service.contracts.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <FileCode className="h-5 w-5 text-primary" />
-              API Эндпоинты и Контракты
-            </CardTitle>
-            <CardDescription>
-              Задекларированные публичные интерфейсы сервиса согласно Golden Dataset
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {service.contracts.map((contract) => (
-              <div key={contract.endpoint} className="p-4 rounded-lg border bg-muted/30 space-y-2">
-                <div className="flex items-center gap-2.5 flex-wrap">
-                  <Badge variant="outline" className="font-mono font-bold bg-primary/10 text-primary border-primary/30">
-                    {contract.method}
-                  </Badge>
-                  <span className="font-mono text-sm font-semibold text-foreground">
-                    {contract.endpoint}
-                  </span>
-                  <Badge variant="secondary" className="text-xs">
-                    {contract.protocol}
-                  </Badge>
-                </div>
-                <p className="text-xs text-muted-foreground">{contract.description}</p>
-
-                {contract.architectural_constraints && contract.architectural_constraints.length > 0 && (
-                  <div className="mt-2 pt-2 border-t border-border/60">
-                    <div className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider mb-1 flex items-center gap-1">
-                      <ShieldAlert className="h-3 w-3 text-amber-500" />
-                      Архитектурные ограничения:
+              <div className="border-t pt-4">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
+                  Статус архитектурного соответствия
+                </h4>
+                {isDriftDetected ? (
+                  <div className="rounded-md border border-destructive/30 bg-destructive/10 p-4 text-sm flex items-start gap-3 text-destructive">
+                    <ShieldAlert className="h-5 w-5 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-semibold">Обнаружено нарушение архитектурной политики No-Cycles</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Один или несколько исходящих вызовов создают циклическую зависимость в графе вызовов.
+                        Необходимо перевести синхронный REST вызов на асинхронные события брокера.
+                      </p>
                     </div>
-                    <ul className="list-disc list-inside text-xs text-muted-foreground space-y-0.5 pl-1">
-                      {contract.architectural_constraints.map((constraint, idx) => (
-                        <li key={idx}>{constraint}</li>
-                      ))}
-                    </ul>
+                  </div>
+                ) : (
+                  <div className="rounded-md border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm flex items-start gap-3 text-emerald-600 dark:text-emerald-400">
+                    <ShieldCheck className="h-5 w-5 mt-0.5 shrink-0" />
+                    <div>
+                      <p className="font-semibold">Архитектурный дрейф отсутствует</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Все сетевые связи и контракты сервиса строго соответствуют архитектурному Source of Truth.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
-            ))}
-          </CardContent>
-        </Card>
-      )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-      {/* Outgoing Calls / Dependencies */}
-      {service.outgoingCalls && service.outgoingCalls.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Radio className="h-5 w-5 text-primary" />
-              Исходящие интеграции ({service.outgoingCalls.length})
-            </CardTitle>
-            <CardDescription>
-              Сетевые вызовы и публикации в брокеры согласно архитектурному манифесту
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {service.outgoingCalls.map((call, idx) => (
-                <div
-                  key={idx}
-                  className={`p-3 rounded-md border text-sm flex items-start justify-between gap-3 ${
-                    call.is_defect_cycle
-                      ? 'border-destructive/40 bg-destructive/5'
-                      : 'border-border bg-card'
-                  }`}
-                >
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{call.target}</span>
-                      {call.is_defect_cycle && (
-                        <Badge variant="destructive" className="text-[10px] px-1.5 py-0">
-                          Дефект (Цикл)
-                        </Badge>
+        <TabsContent value="dependencies" className="space-y-6 mt-0">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Исходящие вызовы (Сервисы-партнеры)</CardTitle>
+              <CardDescription>
+                Сетевые зависимости сервиса, протоколы вызова и контракты
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {outgoingCalls.length > 0 ? (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Сервис-партнер</TableHead>
+                        <TableHead>Протокол</TableHead>
+                        <TableHead>Контракт / Топик</TableHead>
+                        <TableHead>Статус связи</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {outgoingCalls.map((call, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell className="font-semibold text-foreground">
+                            {call.target}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline" className="font-mono text-xs">
+                              {call.protocol}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="font-mono text-xs text-muted-foreground">
+                            {call.contract && <span>контракт: {call.contract}</span>}
+                            {call.topic && <span>топик: {call.topic}</span>}
+                            {!call.contract && !call.topic && '—'}
+                          </TableCell>
+                          <TableCell>
+                            {call.is_defect_cycle ? (
+                              <Badge variant="destructive" className="gap-1 text-xs">
+                                <AlertTriangle className="h-3 w-3" />
+                                Дефект: цикл
+                              </Badge>
+                            ) : (
+                              <Badge variant="outline" className="text-emerald-600 border-emerald-500/30 bg-emerald-500/10 text-xs">
+                                Валидно
+                              </Badge>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              ) : (
+                <div className="p-8 text-center text-sm text-muted-foreground border rounded-md bg-muted/20">
+                  У этого сервиса нет зарегистрированных исходящих зависимостей.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Database className="h-4 w-4 text-primary" />
+                  Подключенные базы данных
+                </CardTitle>
+                <CardDescription>
+                  Хранилища данных, СУБД и распределенные кэши
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {databases.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {databases.map((db, idx) => (
+                      <div
+                        key={idx}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border bg-card text-xs font-medium"
+                      >
+                        <Database className="h-3.5 w-3.5 text-muted-foreground" />
+                        {db}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Нет подключенных СУБД.</p>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Radio className="h-4 w-4 text-primary" />
+                  Топики брокеров сообщений
+                </CardTitle>
+                <CardDescription>
+                  События Kafka / брокера, публикуемые или потребляемые сервисом
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {brokerTopics.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {brokerTopics.map((topic, idx) => (
+                      <div
+                        key={idx}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md border bg-card text-xs font-mono text-muted-foreground"
+                      >
+                        <Radio className="h-3.5 w-3.5 text-primary" />
+                        {topic}
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-muted-foreground">Нет связанных топиков брокера.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="contracts" className="space-y-4 mt-0">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Опубликованные API-эндпоинты</CardTitle>
+              <CardDescription>
+                Перечень зарегистрированных контрактов сервиса и статус их документированности
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {contracts.length > 0 ? (
+                <div className="space-y-3">
+                  {contracts.map((contract, idx) => (
+                    <div key={idx} className="p-4 rounded-lg border bg-card space-y-2">
+                      <div className="flex items-center justify-between gap-3 flex-wrap">
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                          <Badge variant="outline" className="font-mono font-bold bg-primary/10 text-primary border-primary/30">
+                            {contract.method}
+                          </Badge>
+                          <span className="font-mono text-sm font-semibold text-foreground">
+                            {contract.endpoint}
+                          </span>
+                          <Badge variant="secondary" className="text-xs">
+                            {contract.protocol}
+                          </Badge>
+                        </div>
+
+                        <div>
+                          {contract.docStatus === 'DOCUMENTED' && (
+                            <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-xs">
+                              Задокументирован
+                            </Badge>
+                          )}
+                          {contract.docStatus === 'NEEDS_UPDATE' && (
+                            <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30 text-xs">
+                              Требует обновления
+                            </Badge>
+                          )}
+                          {contract.docStatus === 'UNDOCUMENTED' && (
+                            <Badge variant="secondary" className="text-xs">
+                              Не задокументирован
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+
+                      <p className="text-xs text-muted-foreground">{contract.description}</p>
+
+                      {contract.architectural_constraints && contract.architectural_constraints.length > 0 && (
+                        <div className="mt-3 pt-2.5 border-t border-border/70 text-xs">
+                          <span className="font-semibold text-muted-foreground uppercase tracking-wider text-[11px] block mb-1">
+                            Архитектурные ограничения:
+                          </span>
+                          <ul className="list-disc list-inside text-muted-foreground space-y-0.5 pl-1">
+                            {contract.architectural_constraints.map((c, cIdx) => (
+                              <li key={cIdx}>{c}</li>
+                            ))}
+                          </ul>
+                        </div>
                       )}
                     </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {call.contract && <span>Контракт: <code className="font-mono">{call.contract}</code></span>}
-                      {call.topic && <span>Топик Kafka: <code className="font-mono">{call.topic}</code></span>}
-                    </div>
-                  </div>
-                  <Badge variant="outline" className="text-[11px] font-mono shrink-0">
-                    {call.protocol}
-                  </Badge>
+                  ))}
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+              ) : (
+                <div className="p-8 text-center text-sm text-muted-foreground border rounded-md bg-muted/20">
+                  У этого сервиса нет задекларированных публичных API-контрактов.
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
