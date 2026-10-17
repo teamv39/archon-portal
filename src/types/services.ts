@@ -1,4 +1,5 @@
 export type DriftStatus = 'in_sync' | 'drift_detected';
+export type DocStatus = 'DOCUMENTED' | 'NEEDS_UPDATE' | 'UNDOCUMENTED';
 
 export interface Contract {
   service: string;
@@ -6,7 +7,10 @@ export interface Contract {
   method: string;
   protocol: string;
   description: string;
+  docStatus?: DocStatus;
   architectural_constraints?: string[];
+  request_body?: Record<string, unknown>;
+  response_body?: Record<string, unknown>;
 }
 
 export interface OutgoingCall {
@@ -27,6 +31,9 @@ export interface Service {
   description?: string;
   tier?: number;
   repoUrl?: string;
+  docsUrl?: string;
+  databases?: string[];
+  brokerTopics?: string[];
   outgoingCalls?: OutgoingCall[];
   contracts?: Contract[];
   endpoints?: string[];

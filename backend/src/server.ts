@@ -142,8 +142,53 @@ const start = async () => {
       'auth-service': 'Централизованная аутентификация, валидация токенов доступа и управление ролями (Tier 0).',
     }
 
+    const databasesMap: Record<string, string[]> = {
+      'order-service': ['PostgreSQL 16', 'Redis Cluster'],
+      'billing-service': ['PostgreSQL 16'],
+      'inventory-service': ['PostgreSQL 16', 'Redis Cache'],
+      'delivery-service': ['MongoDB 7.0'],
+      'notification-service': ['Redis PubSub'],
+      'auth-service': ['PostgreSQL 16', 'HashiCorp Vault'],
+    }
+
+    const brokerTopicsMap: Record<string, string[]> = {
+      'order-service': ['order.created', 'order.cancelled'],
+      'billing-service': ['order.paid', 'invoice.generated'],
+      'inventory-service': ['stock.reserved', 'stock.replenished'],
+      'delivery-service': ['delivery.scheduled', 'delivery.completed'],
+      'notification-service': ['notifications.dispatched'],
+      'auth-service': ['auth.user_logged_in', 'auth.token_revoked'],
+    }
+
+    const additionalContracts: Record<string, Array<{ endpoint: string; method: string; protocol: string; description: string; docStatus: string }>> = {
+      'order-service': [
+        { endpoint: '/api/v1/orders', method: 'POST', protocol: 'REST', description: 'Оформление и валидация нового заказа', docStatus: 'DOCUMENTED' },
+        { endpoint: '/api/v1/orders/:id', method: 'GET', protocol: 'REST', description: 'Получение детальной информации о заказе', docStatus: 'DOCUMENTED' },
+      ],
+      'inventory-service': [
+        { endpoint: '/api/v1/stock/reserve', method: 'POST', protocol: 'REST', description: 'Резервирование складских остатков', docStatus: 'DOCUMENTED' },
+        { endpoint: '/api/v1/stock/:sku', method: 'GET', protocol: 'REST', description: 'Проверка доступного количества позиции по SKU', docStatus: 'NEEDS_UPDATE' },
+      ],
+      'notification-service': [
+        { endpoint: '/api/v1/notifications/send', method: 'POST', protocol: 'gRPC', description: 'Отправка системных и транзакционных пушей/писем', docStatus: 'DOCUMENTED' },
+      ],
+      'auth-service': [
+        { endpoint: '/api/v1/auth/token', method: 'POST', protocol: 'REST', description: 'Выпуск и обновление JWT токенов доступа', docStatus: 'DOCUMENTED' },
+        { endpoint: '/api/v1/auth/validate', method: 'POST', protocol: 'gRPC', description: 'Валидация сессии и проверка прав субъекта', docStatus: 'DOCUMENTED' },
+      ],
+    }
+
     return data.services.map((s) => {
-      const contracts = Object.values(data.contracts).filter((c) => c.service === s.id)
+      const baseContracts = Object.values(data.contracts)
+        .filter((c) => c.service === s.id)
+        .map((c) => ({ ...c, docStatus: 'DOCUMENTED' }))
+
+      const extraContracts = (additionalContracts[s.id] || []).map((c) => ({
+        service: s.id,
+        ...c,
+      }))
+
+      const contracts = [...baseContracts, ...extraContracts]
       const endpoints = contracts.map((c) => `${c.method} ${c.endpoint}`)
       const isDrift = s.outgoing_calls.some((c) => c.is_defect_cycle)
 
@@ -157,6 +202,9 @@ const start = async () => {
         description: descriptions[s.id] || `Микросервис ${s.name} (${s.owner_team}).`,
         tier: s.tier,
         repoUrl: s.repo_url,
+        docsUrl: `https://archon.internal/docs/${s.id}`,
+        databases: databasesMap[s.id] || [],
+        brokerTopics: brokerTopicsMap[s.id] || [],
         outgoingCalls: s.outgoing_calls,
         contracts,
         endpoints,
