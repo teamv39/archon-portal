@@ -64,4 +64,4 @@ jobs:
         run: npm run build
 
       - name: Test Docker build (BFF)
-        run: docker build -f Dockerfile.bff -t bff-test .
+        run: docker build -f Dockerfile.bff -t bff-test ..
