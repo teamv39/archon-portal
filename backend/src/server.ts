@@ -5,6 +5,8 @@ import rateLimit from '@fastify/rate-limit'
 import { servicesRoutes } from './routes/services.js'
 import { findingsRoutes } from './routes/findings.js'
 import { diagramsRoutes } from './routes/diagrams.js'
+import { authRoutes } from './routes/auth.js'
+import fastifyCookie from '@fastify/cookie'
 
 const fastify = Fastify({
   logger: {
@@ -62,6 +64,10 @@ const start = async () => {
     }),
   })
 
+  await fastify.register(fastifyCookie, {
+    secret: 'my-secret-key', // опционально для подписанных кук
+  })
+
   // test
   fastify.get('/', async () => {
     return { hello: 'world' }
@@ -79,6 +85,7 @@ const start = async () => {
   await fastify.register(servicesRoutes, { prefix: '/api' })
   await fastify.register(findingsRoutes, { prefix: '/api' })
   await fastify.register(diagramsRoutes, { prefix: '/api' })
+  await fastify.register(authRoutes, { prefix: '/api' })
 
   try {
     await fastify.listen({ port: 5000, host: '0.0.0.0' })
