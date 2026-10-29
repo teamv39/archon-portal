@@ -1,7 +1,10 @@
 import type { FastifyPluginAsync } from 'fastify'
 import { loginSchema, type AuthUser } from '../types/auth.js'
+import { sessionStorage } from '../utils/sessionStorage.js'
+import { verifySession } from '../hooks/verifySession.js'
 
 export const authRoutes: FastifyPluginAsync = async (fastify) => {
+
     fastify.post('/auth/login', async (request, reply) => {
         const result = loginSchema.safeParse(request.body)
         if (!result.success) {
@@ -14,35 +17,35 @@ export const authRoutes: FastifyPluginAsync = async (fastify) => {
             // mock
             return reply.status(401).send({ error: 'Неверное имя пользователя или пароль' })
         }
-        reply.setCookie('session_id', 'tokenOrId', {
+        const user = { id: '1', username, role: 'admin' }
+
+        const existingSessionId = request.cookies.session_id
+        if (existingSessionId) {
+            sessionStorage.delete(existingSessionId)
+        }
+        const sessionId = sessionStorage.create(user)
+
+        reply.setCookie('session_id', sessionId, {
             path: '/',
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'lax',
             maxAge: 3600 * 24,
         })
-        const user = { id: '1', username, role: 'admin' }
         return reply.status(200).send(user)
     })
 
     fastify.post('/auth/logout', async (request, reply) => {
+
+        const sessionId = request.cookies.session_id
+        if (sessionId) {
+            sessionStorage.delete(sessionId)
+        }
         reply.clearCookie('session_id', { path: '/' })
-        // Потом надо еще инвалидировать токен в бд и ещё где-либо
         return reply.status(200).send({ message: 'Выход выполнен' })
     })
 
-    fastify.get('/auth/me', async (request, reply) => {
-        const sessionId = request.cookies.session_id
-        if (!sessionId) {
-            return reply.status(401).send({ error: 'Сессия не найдена' })
-        }
-        // mock
-        const user: AuthUser = {
-            id: '1',
-            username: 'admin',
-            role: 'admin',
-        }
-
-        return reply.status(200).send(user)
+    fastify.get('/auth/me', { preHandler: [verifySession] }, async (request, reply) => {
+        return reply.status(200).send(request.user)
     })
 }

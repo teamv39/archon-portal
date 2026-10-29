@@ -7,6 +7,7 @@ import { findingsRoutes } from './routes/findings.js'
 import { diagramsRoutes } from './routes/diagrams.js'
 import { authRoutes } from './routes/auth.js'
 import fastifyCookie from '@fastify/cookie'
+import { verifySession } from './hooks/verifySession.js'
 
 const fastify = Fastify({
   logger: {
@@ -82,10 +83,15 @@ const start = async () => {
   })
 
   // Регистрация апи маршрутов
-  await fastify.register(servicesRoutes, { prefix: '/api' })
-  await fastify.register(findingsRoutes, { prefix: '/api' })
-  await fastify.register(diagramsRoutes, { prefix: '/api' })
   await fastify.register(authRoutes, { prefix: '/api' })
+
+  await fastify.register(async (protectedRoutes) => {
+    protectedRoutes.addHook('preHandler', verifySession)
+
+    await protectedRoutes.register(servicesRoutes)
+    await protectedRoutes.register(findingsRoutes)
+    await protectedRoutes.register(diagramsRoutes)
+  }, { prefix: '/api' })
 
   try {
     await fastify.listen({ port: 5000, host: '0.0.0.0' })

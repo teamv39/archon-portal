@@ -12,3 +12,9 @@ export interface AuthUser {
     username: string
     role: string
 }
+
+declare module 'fastify' {
+    interface FastifyRequest {
+        user?: AuthUser
+    }
+}
