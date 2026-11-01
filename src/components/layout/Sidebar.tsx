@@ -4,7 +4,7 @@ import { Layers, Inbox, Network } from "lucide-react"
 const navItems = [
     { to: "/services", label: "Каталог сервисов", icon: Layers },
     { to: "/findings", label: "Инбокс находок", icon: Inbox },
-    { to: "/architecture", label: "Карта LikeC4", icon: Network },
+    { to: "/architecture", label: "Архитектурная карта", icon: Network },
 ]
 
 export function Sidebar() {

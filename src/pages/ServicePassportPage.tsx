@@ -123,7 +123,7 @@ export function ServicePassportPage() {
             <Button variant="outline" size="sm" asChild>
               <Link to="/architecture">
                 <Layers className="h-4 w-4 mr-1.5" />
-                На карте LikeC4
+                На архитектурной карте
               </Link>
             </Button>
           </div>

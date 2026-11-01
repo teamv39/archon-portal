@@ -313,7 +313,7 @@ export function ArchitecturePage() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-zinc-100 flex items-center gap-2.5">
             <Network className="h-6 w-6 text-indigo-400" />
-            Интерактивная карта LikeC4
+            Интерактивная архитектурная карта
           </h1>
           <p className="text-sm text-zinc-400 mt-0.5">
             Граф архитектурных сервисов, зависимостей и контроль дефектов дрейфа в реальном времени.
@@ -426,7 +426,7 @@ export function ArchitecturePage() {
         {isLoading && (
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-sm space-y-3">
             <Skeleton className="h-10 w-10 rounded-full bg-zinc-800 animate-spin" />
-            <p className="text-xs text-zinc-400">Загрузка архитектурной модели C4...</p>
+            <p className="text-xs text-zinc-400">Загрузка архитектурной модели...</p>
           </div>
         )}
 

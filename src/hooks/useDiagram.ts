@@ -4,7 +4,7 @@ import type { DiagramResponse } from '@/types/diagram'
 async function fetchC4Diagram(): Promise<DiagramResponse> {
   const res = await fetch('/api/diagrams/c4')
   if (!res.ok) {
-    throw new Error('Не удалось загрузить схему архитектуры C4')
+    throw new Error('Не удалось загрузить схему архитектуры')
   }
   return res.json()
 }
