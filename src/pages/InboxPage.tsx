@@ -388,7 +388,7 @@ export function InboxPage() {
                         <span className="font-mono text-xs font-semibold text-zinc-200">
                           {finding.id}
                         </span>
-                        <span className="font-mono text-[11px] text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
+                        <span className="font-mono text-[13px] text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20">
                           {finding.serviceId}
                         </span>
                       </div>
@@ -405,7 +405,7 @@ export function InboxPage() {
 
                     {/* Bottom: Evidence snippets & relative info */}
                     <div className="flex items-center justify-between text-xs text-zinc-400 pt-1 border-t border-zinc-800/80">
-                      <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400 truncate max-w-[280px]">
+                      <div className="flex items-center gap-2 text-[13px] font-mono text-zinc-400 truncate max-w-[280px]">
                         {finding.evidence.codeFile && (
                           <span className="truncate">
                             {finding.evidence.codeFile}
@@ -418,7 +418,7 @@ export function InboxPage() {
                         )}
                       </div>
 
-                      <div className="flex items-center gap-1 text-[11px] text-zinc-400 shrink-0">
+                      <div className="flex items-center gap-1 text-[13px] text-zinc-400 shrink-0">
                         <span>
                           {new Date(finding.createdAt).toLocaleDateString("ru-RU", {
                             day: "numeric",

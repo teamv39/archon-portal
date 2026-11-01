@@ -33,7 +33,7 @@ export function Sidebar() {
                         <item.icon className="h-4 w-4" />
                         <span className="flex-1">{item.label}</span>
                         {item.to === "/findings" && newFindingsCount > 0 && (
-                            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+                            <span className="text-[13px] font-semibold px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
                                 {newFindingsCount}
                             </span>
                         )}

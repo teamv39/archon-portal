@@ -56,7 +56,7 @@ export function EvidenceReviewPanel({
             {finding.title}
           </h2>
           <div className="flex items-center gap-3 text-xs text-zinc-400 pt-0.5">
-            <span className="font-mono text-[11px] text-zinc-500">
+            <span className="font-mono text-[13px] text-zinc-500">
               Категория: {finding.category}
             </span>
             <span>•</span>
@@ -108,7 +108,7 @@ export function EvidenceReviewPanel({
               <ShieldCheck className="h-4 w-4 text-amber-400" />
               <span>Архитектурный риск согласован</span>
               {finding.riskAcceptedUntil && (
-                <span className="bg-amber-500/20 px-2 py-0.5 rounded text-[11px] font-mono">
+                <span className="bg-amber-500/20 px-2 py-0.5 rounded text-[13px] font-mono">
                   Срок: {finding.riskAcceptedUntil}
                 </span>
               )}
@@ -143,7 +143,7 @@ export function EvidenceReviewPanel({
                 {evidence.docFile && (
                   <div
                     title={evidence.docFile}
-                    className="font-mono text-[11px] text-zinc-400 bg-zinc-800/90 px-2 py-0.5 rounded border border-zinc-700/80 truncate"
+                    className="font-mono text-[13px] text-zinc-400 bg-zinc-800/90 px-2 py-0.5 rounded border border-zinc-700/80 truncate"
                   >
                     {evidence.docFile}
                   </div>
@@ -172,7 +172,7 @@ export function EvidenceReviewPanel({
                     </span>
                   </div>
                   {evidence.codeLines && (
-                    <span className="font-mono text-[11px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/25 shrink-0 whitespace-nowrap">
+                    <span className="font-mono text-[13px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/25 shrink-0 whitespace-nowrap">
                       {evidence.codeLines}
                     </span>
                   )}
@@ -180,7 +180,7 @@ export function EvidenceReviewPanel({
                 {evidence.codeFile && (
                   <div
                     title={evidence.codeFile}
-                    className="font-mono text-[11px] text-zinc-400 bg-zinc-800/90 px-2 py-0.5 rounded border border-zinc-700/80 truncate"
+                    className="font-mono text-[13px] text-zinc-400 bg-zinc-800/90 px-2 py-0.5 rounded border border-zinc-700/80 truncate"
                   >
                     {evidence.codeFile}
                   </div>

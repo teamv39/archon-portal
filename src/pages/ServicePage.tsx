@@ -94,7 +94,7 @@ export function ServicesPage() {
             <div className="font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2">
               <span>{row.original.name}</span>
               {row.original.tier !== undefined && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono border">
+                <span className="text-[12px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono border">
                   Tier {row.original.tier}
                 </span>
               )}
@@ -102,7 +102,7 @@ export function ServicesPage() {
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
               <span className="font-mono">{row.original.id}</span>
               {row.original.endpoints && row.original.endpoints.length > 0 && (
-                <span className="text-[11px] font-mono text-primary font-medium">
+                <span className="text-[13px] font-mono text-primary font-medium">
                   • {row.original.endpoints[0]}
                 </span>
               )}
