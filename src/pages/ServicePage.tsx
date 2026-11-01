@@ -24,9 +24,9 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Skeleton } from "@/components/ui/skeleton"
+import { CustomSelect } from "@/components/ui/custom-select"
 import {
   Search,
-  Filter,
   ArrowUpDown,
   SearchX,
   AlertTriangle,
@@ -57,6 +57,14 @@ export function ServicesPage() {
     return Array.from(teams).sort()
   }, [services])
 
+  const teamOptions = React.useMemo(
+    () => [
+      { value: "all", label: `Все команды (${services.length})` },
+      ...uniqueTeams.map((team) => ({ value: team, label: team })),
+    ],
+    [uniqueTeams, services.length]
+  )
+
   // Summary counts
   const stats = React.useMemo(() => {
     const total = services.length
@@ -86,7 +94,7 @@ export function ServicesPage() {
             <div className="font-medium text-foreground hover:text-primary transition-colors flex items-center gap-2">
               <span>{row.original.name}</span>
               {row.original.tier !== undefined && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono border">
+                <span className="text-[12px] px-1.5 py-0.5 rounded bg-muted text-muted-foreground font-mono border">
                   Tier {row.original.tier}
                 </span>
               )}
@@ -94,7 +102,7 @@ export function ServicesPage() {
             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
               <span className="font-mono">{row.original.id}</span>
               {row.original.endpoints && row.original.endpoints.length > 0 && (
-                <span className="text-[11px] font-mono text-primary font-medium">
+                <span className="text-[13px] font-mono text-primary font-medium">
                   • {row.original.endpoints[0]}
                 </span>
               )}
@@ -215,8 +223,7 @@ export function ServicesPage() {
     table.getColumn("name")?.setFilterValue(value)
   }
 
-  const handleTeamChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value
+  const handleTeamChange = (value: string) => {
     setSelectedTeam(value)
     table.getColumn("owner")?.setFilterValue(value === "all" ? "" : value)
   }
@@ -290,23 +297,12 @@ export function ServicesPage() {
         </div>
 
         {/* Team Filter */}
-        <div className="flex items-center gap-2 min-w-[200px]">
-          <div className="relative w-full">
-            <Filter className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground pointer-events-none" />
-            <select
-              value={selectedTeam}
-              onChange={handleTeamChange}
-              className="h-10 w-full pl-9 pr-8 text-sm rounded-md border border-input bg-background text-foreground shadow-sm focus:outline-none focus:ring-1 focus:ring-ring cursor-pointer"
-            >
-              <option value="all">Все команды ({services.length})</option>
-              {uniqueTeams.map((team) => (
-                <option key={team} value={team}>
-                  {team}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
+        <CustomSelect
+          value={selectedTeam}
+          onChange={handleTeamChange}
+          options={teamOptions}
+          className="min-w-[210px]"
+        />
 
         {/* Quick status filters */}
         <div className="inline-flex rounded-md border bg-card p-1 text-xs">
