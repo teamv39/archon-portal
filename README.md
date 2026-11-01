@@ -1,5 +1,7 @@
 # Archon Portal (`archon-portal`)
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 Клиентская витрина enterprise-платформы docs-as-code и AI-native Source of Truth **Archon** ([teamv39/archon](https://github.com/teamv39/archon)).
 
 ---
@@ -47,3 +49,9 @@
 * Ветки: `feature/<task-id>-kebab` от `main`.
 * Коммиты: `ARCH-XX: Описание` (в соответствии с номерами тикетов в проектном трекере).
 * Пулл-реквесты: открываются в `main`, первичное код-ревью проводит Tech Lead (@dusk190).
+
+---
+
+## Лицензия
+
+Проект распространяется под лицензией [Apache License 2.0](LICENSE).
