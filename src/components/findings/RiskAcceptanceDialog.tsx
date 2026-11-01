@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { CustomSelect } from "@/components/ui/custom-select"
 
 interface RiskAcceptanceDialogProps {
   open: boolean
@@ -60,17 +61,12 @@ export function RiskAcceptanceDialog({
             <label className="text-xs font-medium text-zinc-300">
               Срок действия исключения
             </label>
-            <select
+            <CustomSelect
               value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              className="w-full h-9 rounded-md border border-zinc-700 bg-zinc-800 px-3 text-xs text-zinc-100 focus:outline-none focus:ring-1 focus:ring-primary"
-            >
-              {DURATION_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
+              onChange={setDuration}
+              options={DURATION_OPTIONS}
+              className="w-full bg-zinc-800 border-zinc-700"
+            />
           </div>
 
           <div className="space-y-2">

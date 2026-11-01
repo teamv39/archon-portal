@@ -4,6 +4,7 @@ import { FindingSeverityBadge } from "@/components/findings/FindingSeverityBadge
 import { FindingStatusBadge } from "@/components/findings/FindingStatusBadge"
 import { EvidenceReviewPanel } from "@/components/findings/EvidenceReviewPanel"
 import { RiskAcceptanceDialog } from "@/components/findings/RiskAcceptanceDialog"
+import { CustomSelect } from "@/components/ui/custom-select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -45,6 +46,41 @@ export function InboxPage() {
     })
     return Array.from(set).sort()
   }, [findings])
+
+  const severityOptions = React.useMemo(
+    () => [
+      { value: "all", label: "Все" },
+      {
+        value: "CRITICAL",
+        label: "Critical",
+        badge: <span className="h-2 w-2 rounded-full bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)]" />,
+      },
+      {
+        value: "HIGH",
+        label: "High",
+        badge: <span className="h-2 w-2 rounded-full bg-orange-500 shadow-[0_0_6px_rgba(249,115,22,0.6)]" />,
+      },
+      {
+        value: "MEDIUM",
+        label: "Medium",
+        badge: <span className="h-2 w-2 rounded-full bg-amber-500 shadow-[0_0_6px_rgba(245,158,11,0.6)]" />,
+      },
+      {
+        value: "LOW",
+        label: "Low",
+        badge: <span className="h-2 w-2 rounded-full bg-blue-400 shadow-[0_0_6px_rgba(96,165,250,0.6)]" />,
+      },
+    ],
+    []
+  )
+
+  const serviceOptions = React.useMemo(
+    () => [
+      { value: "all", label: "Все" },
+      ...uniqueServices.map((srv) => ({ value: srv, label: srv })),
+    ],
+    [uniqueServices]
+  )
 
   // Summary counts
   const stats = React.useMemo(() => {
@@ -235,35 +271,22 @@ export function InboxPage() {
         </div>
 
         {/* Severity Filter */}
-        <div className="min-w-[150px]">
-          <select
-            value={selectedSeverity}
-            onChange={(e) => setSelectedSeverity(e.target.value)}
-            className="h-10 w-full px-3 text-xs rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-          >
-            <option value="all">Критичность: Все</option>
-            <option value="CRITICAL">Critical</option>
-            <option value="HIGH">High</option>
-            <option value="MEDIUM">Medium</option>
-            <option value="LOW">Low</option>
-          </select>
-        </div>
+        <CustomSelect
+          labelPrefix="Критичность"
+          value={selectedSeverity}
+          onChange={setSelectedSeverity}
+          options={severityOptions}
+          className="min-w-[170px]"
+        />
 
         {/* Service Filter */}
-        <div className="min-w-[170px]">
-          <select
-            value={selectedService}
-            onChange={(e) => setSelectedService(e.target.value)}
-            className="h-10 w-full px-3 text-xs rounded-md border border-zinc-800 bg-zinc-900 text-zinc-200 shadow-sm focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
-          >
-            <option value="all">Сервис: Все</option>
-            {uniqueServices.map((srv) => (
-              <option key={srv} value={srv}>
-                {srv}
-              </option>
-            ))}
-          </select>
-        </div>
+        <CustomSelect
+          labelPrefix="Сервис"
+          value={selectedService}
+          onChange={setSelectedService}
+          options={serviceOptions}
+          className="min-w-[180px]"
+        />
 
         {/* Reset Filter Button */}
         {isFiltered && (
