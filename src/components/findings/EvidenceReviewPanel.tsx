@@ -138,17 +138,20 @@ export function EvidenceReviewPanel({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* Documentation Column */}
             <div className="flex flex-col rounded-lg border border-zinc-800 bg-zinc-950/60 overflow-hidden">
-              <div className="px-3.5 py-2.5 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-4 w-4 text-indigo-400" />
-                  <span className="text-xs font-medium text-zinc-200">
-                    Документация / Спецификация
+              <div className="px-3.5 py-2.5 bg-zinc-900 border-b border-zinc-800 flex flex-col gap-1.5">
+                <div className="flex items-center gap-1.5">
+                  <FileText className="h-3.5 w-3.5 text-indigo-400 shrink-0" />
+                  <span className="text-xs font-semibold text-zinc-200">
+                    Документация
                   </span>
                 </div>
                 {evidence.docFile && (
-                  <span className="font-mono text-[11px] text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700 truncate max-w-[180px]">
+                  <div
+                    title={evidence.docFile}
+                    className="font-mono text-[11px] text-zinc-400 bg-zinc-800/90 px-2 py-0.5 rounded border border-zinc-700/80 truncate"
+                  >
                     {evidence.docFile}
-                  </span>
+                  </div>
                 )}
               </div>
 
@@ -165,25 +168,28 @@ export function EvidenceReviewPanel({
 
             {/* Code AST Column */}
             <div className="flex flex-col rounded-lg border border-zinc-800 bg-zinc-950/60 overflow-hidden">
-              <div className="px-3.5 py-2.5 bg-zinc-900 border-b border-zinc-800 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Code2 className="h-4 w-4 text-emerald-400" />
-                  <span className="text-xs font-medium text-zinc-200">
-                    Код (AST анализ)
-                  </span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  {evidence.codeFile && (
-                    <span className="font-mono text-[11px] text-zinc-400 bg-zinc-800 px-2 py-0.5 rounded border border-zinc-700 truncate max-w-[150px]">
-                      {evidence.codeFile}
+              <div className="px-3.5 py-2.5 bg-zinc-900 border-b border-zinc-800 flex flex-col gap-1.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <Code2 className="h-3.5 w-3.5 text-emerald-400 shrink-0" />
+                    <span className="text-xs font-semibold text-zinc-200 truncate">
+                      Код (AST)
                     </span>
-                  )}
+                  </div>
                   {evidence.codeLines && (
-                    <span className="font-mono text-[11px] text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                    <span className="font-mono text-[11px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/25 shrink-0 whitespace-nowrap">
                       {evidence.codeLines}
                     </span>
                   )}
                 </div>
+                {evidence.codeFile && (
+                  <div
+                    title={evidence.codeFile}
+                    className="font-mono text-[11px] text-zinc-400 bg-zinc-800/90 px-2 py-0.5 rounded border border-zinc-700/80 truncate"
+                  >
+                    {evidence.codeFile}
+                  </div>
+                )}
               </div>
 
               <div className="p-3.5 flex-1 bg-zinc-950 overflow-x-auto border-l-2 border-emerald-500/50 font-mono text-xs text-zinc-200 leading-relaxed whitespace-pre">
