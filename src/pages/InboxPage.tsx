@@ -442,7 +442,7 @@ export function InboxPage() {
       {/* 4. Fullscreen Modal View (Satisfies both Master-Detail & Modal DoD criteria) */}
       {selectedFinding && (
         <Dialog open={isFullscreenModalOpen} onOpenChange={setIsFullscreenModalOpen}>
-          <DialogContent className="max-w-5xl h-[85vh] p-0 bg-transparent border-none overflow-hidden">
+          <DialogContent className="max-w-5xl h-[85vh] p-0 bg-transparent border-none overflow-hidden [&>button]:hidden">
             <EvidenceReviewPanel
               finding={selectedFinding}
               isMutating={resolveFindingMutation.isPending}
@@ -450,7 +450,6 @@ export function InboxPage() {
               onAcceptRisk={handleOpenRiskDialog}
               onFalsePositive={handleFalsePositive}
               isFullscreen={true}
-              onToggleFullscreen={() => setIsFullscreenModalOpen(false)}
               onClose={() => setIsFullscreenModalOpen(false)}
             />
           </DialogContent>

@@ -10,7 +10,6 @@ import {
   AlertOctagon,
   ShieldCheck,
   Maximize2,
-  Minimize2,
   X,
   Clock,
 } from "lucide-react"
@@ -75,19 +74,15 @@ export function EvidenceReviewPanel({
 
         {/* Header Controls */}
         <div className="flex items-center gap-1 text-zinc-400">
-          {onToggleFullscreen && (
+          {!isFullscreen && onToggleFullscreen && (
             <Button
               variant="ghost"
               size="icon"
               className="h-8 w-8 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
               onClick={onToggleFullscreen}
-              title={isFullscreen ? "Свернуть" : "Развернуть на весь экран"}
+              title="Развернуть на весь экран"
             >
-              {isFullscreen ? (
-                <Minimize2 className="h-4 w-4" />
-              ) : (
-                <Maximize2 className="h-4 w-4" />
-              )}
+              <Maximize2 className="h-4 w-4" />
             </Button>
           )}
           {onClose && (
@@ -96,7 +91,7 @@ export function EvidenceReviewPanel({
               size="icon"
               className="h-8 w-8 text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800"
               onClick={onClose}
-              title="Закрыть панель"
+              title={isFullscreen ? "Закрыть модальное окно" : "Закрыть панель"}
             >
               <X className="h-4 w-4" />
             </Button>
