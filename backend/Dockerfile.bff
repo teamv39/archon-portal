@@ -10,11 +10,11 @@ COPY backend/package*.json ./
 # Устанавливаем все зависимости (включая TypeScript для сборки)
 RUN npm ci
 
-# Копируем весь исходный код (папки src, data и конфиги)
+# Копируем весь исходный код (папку src и конфиги)
 COPY backend/tsconfig.json ./
 COPY backend/src ./src
 
-# Собираем проект (запускает tsc)
+# Собираем проект (запускает tsc, который создаст server.js прямо в папке src)
 RUN npm run build
 
 # ==========================================
@@ -27,11 +27,8 @@ WORKDIR /app
 COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
-# Копируем скомпилированный JS и файлы из папки dist
-COPY --from=build /app/dist ./dist
-
-# Копируем папку data с мок-данными
-COPY --from=build /app/data ./data
+# Копируем скомпилированный JS (он лежит в папке src)
+COPY --from=build /app/src ./src
 
 # Запуск от непривилегированного пользователя (требование задачи)
 USER node
