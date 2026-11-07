@@ -2,6 +2,7 @@
   "name": "archon-portal",
   "private": true,
   "version": "0.0.0",
+  "license": "Apache-2.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -16,6 +17,7 @@
     "@radix-ui/react-tabs": "^1.1.22",
     "@tanstack/react-query": "^5.104.3",
     "@tanstack/react-table": "^8.20.6",
+    "@xyflow/react": "^12.12.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.52.0",

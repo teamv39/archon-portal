@@ -5,13 +5,15 @@ FROM node:20-alpine AS build
 WORKDIR /app
 
 # Копируем файлы зависимостей
-COPY package*.json ./
+COPY backend/package*.json ./
 
 # Устанавливаем все зависимости (включая TypeScript для сборки)
 RUN npm ci
 
 # Копируем весь исходный код (папки src, data и конфиги)
-COPY . .
+COPY backend/tsconfig.json ./
+COPY backend/src ./src
+COPY backend/data ./data
 
 # Собираем проект (запускает tsc)
 RUN npm run build
@@ -23,11 +25,11 @@ FROM node:20-alpine
 WORKDIR /app
 
 # Ставим ТОЛЬКО production-зависимости (без тестов и TypeScript)
-COPY package*.json ./
+COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
-# Копируем скомпилированный JS и файлы из папки src
-COPY --from=build /app/src ./src
+# Копируем скомпилированный JS и файлы из папки dist
+COPY --from=build /app/dist ./dist
 
 # Копируем папку data с мок-данными
 COPY --from=build /app/data ./data

@@ -3,6 +3,7 @@ name: Portal CI
 on:
   push:
     branches:
+      - main
       - 'feature/**'
       - 'dev'
     tags:
@@ -10,7 +11,6 @@ on:
   pull_request:
     branches:
       - main
-      - develop
 
 permissions:
   contents: read
@@ -33,7 +33,7 @@ jobs:
         run: npm ci
 
       - name: Typecheck (tsc)
-        run: npx tsc --noEmit
+        run: npx tsc -b --noEmit
 
       - name: Lint
         run: npm run lint

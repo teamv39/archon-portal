@@ -1,5 +1,7 @@
 # Archon Portal (`archon-portal`)
 
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+
 Клиентская витрина enterprise-платформы docs-as-code и AI-native Source of Truth **Archon** ([teamv39/archon](https://github.com/teamv39/archon)).
 
 ---
@@ -66,6 +68,11 @@
 ```bash
 docker pull ghcr.io/teamv39/archon-portal/frontend:dev
 docker pull ghcr.io/teamv39/archon-portal/bff:dev
+```
 
 
+---
 
+## Лицензия
+
+Проект распространяется под лицензией [Apache License 2.0](LICENSE).

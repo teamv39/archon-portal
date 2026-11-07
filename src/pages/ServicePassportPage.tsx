@@ -123,7 +123,7 @@ export function ServicePassportPage() {
             <Button variant="outline" size="sm" asChild>
               <Link to="/architecture">
                 <Layers className="h-4 w-4 mr-1.5" />
-                На карте LikeC4
+                На архитектурной карте
               </Link>
             </Button>
           </div>
@@ -439,7 +439,7 @@ export function ServicePassportPage() {
 
                       {contract.architectural_constraints && contract.architectural_constraints.length > 0 && (
                         <div className="mt-3 pt-2.5 border-t border-border/70 text-xs">
-                          <span className="font-semibold text-muted-foreground uppercase tracking-wider text-[11px] block mb-1">
+                          <span className="font-semibold text-muted-foreground uppercase tracking-wider text-[13px] block mb-1">
                             Архитектурные ограничения:
                           </span>
                           <ul className="list-disc list-inside text-muted-foreground space-y-0.5 pl-1">
