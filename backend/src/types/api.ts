@@ -100,3 +100,54 @@ export interface DiagramResponse {
   nodes: DiagramNode[];
   edges: DiagramEdge[];
 }
+
+// Структуры моковых фикстур ядра и деталей сервисов
+
+export interface RawOutgoingCall {
+  target: string
+  protocol: string
+  contract?: string
+  topic?: string
+  is_defect_cycle?: boolean
+}
+
+export interface RawContract {
+  service: string
+  endpoint: string
+  method: string
+  protocol: string
+  description: string
+  architectural_constraints?: string[]
+}
+
+export interface RawService {
+  id: string
+  name: string
+  tier: number
+  language: string
+  framework: string
+  repo_url: string
+  owner_team: string
+  outgoing_calls: RawOutgoingCall[]
+}
+
+export interface MockDataset {
+  services: RawService[]
+  contracts: Record<string, RawContract>
+  validate_dependency_scenarios: Record<string, unknown>
+}
+
+export interface MockContractDetail {
+  endpoint: string
+  method: string
+  protocol: string
+  description: string
+  docStatus: DocStatus
+}
+
+export interface MockServiceDetails {
+  descriptions: Record<string, string>
+  databases: Record<string, string[]>
+  brokerTopics: Record<string, string[]>
+  additionalContracts: Record<string, MockContractDetail[]>
+}
