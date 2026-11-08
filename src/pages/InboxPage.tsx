@@ -318,11 +318,11 @@ export function InboxPage() {
             {filteredFindings.length === 0 ? (
               <EmptyState
                 variant={!isFiltered ? "success" : "default"}
-                title={!isFiltered ? "Инбокс находок пуст" : "Находки не найдены"}
+                title={!isFiltered ? "Расхождений не обнаружено" : "Находки не найдены"}
                 description={
                   !isFiltered
-                    ? "Все архитектурные дрейфы и дефекты проверены. Новые расхождения появятся при CI-сканировании кода."
-                    : "По выбранным фильтрам нет подходящих расхождений."
+                    ? "Архитектурная документация на 100% синхронизирована с кодом."
+                    : "По заданным фильтрам нет подходящих расхождений."
                 }
                 actionLabel={isFiltered ? "Сбросить фильтры" : undefined}
                 onAction={isFiltered ? handleResetFilters : undefined}

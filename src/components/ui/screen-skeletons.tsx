@@ -1,7 +1,7 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { TableRow, TableCell } from "@/components/ui/table"
 
-export function CatalogTableSkeleton({ rows = 6 }: { rows?: number }) {
+export function CatalogTableSkeleton({ rows = 8 }: { rows?: number }) {
   return (
     <>
       {Array.from({ length: rows }).map((_, i) => (

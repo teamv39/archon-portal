@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useService } from "@/hooks/useService"
 import { Button } from "@/components/ui/button"
@@ -47,10 +48,10 @@ export function ServicePassportPage() {
         <ErrorState
           error={error}
           title={!service && !isError ? "Сервис не найден" : undefined}
-          description={!service && !isError ? `Сервис «${id}» не зарегистрирован в каталоге.` : undefined}
+          description={!service && !isError ? `Сервис «${id}» не найден в графе знаний платформы.` : undefined}
           onRetry={() => refetch()}
           onBack={() => navigate("/services")}
-          backLabel="В каталог сервисов"
+          backLabel="Вернуться в каталог"
         />
       </div>
     )
@@ -302,9 +303,11 @@ export function ServicePassportPage() {
                   </Table>
                 </div>
               ) : (
-                <div className="p-8 text-center text-sm text-muted-foreground border rounded-md bg-muted/20">
-                  У этого сервиса нет зарегистрированных исходящих зависимостей.
-                </div>
+                <EmptyState
+                  title="Нет исходящих зависимостей"
+                  description="У этого сервиса нет зарегистрированных исходящих вызовов."
+                  className="min-h-[160px] py-6"
+                />
               )}
             </CardContent>
           </Card>
@@ -433,9 +436,11 @@ export function ServicePassportPage() {
                   ))}
                 </div>
               ) : (
-                <div className="p-8 text-center text-sm text-muted-foreground border rounded-md bg-muted/20">
-                  У этого сервиса нет задекларированных публичных API-контрактов.
-                </div>
+                <EmptyState
+                  title="Нет публичных контрактов"
+                  description="Сервис не экспортирует публичных HTTP-контрактов (фоновый обработчик)."
+                  className="min-h-[160px] py-6"
+                />
               )}
             </CardContent>
           </Card>

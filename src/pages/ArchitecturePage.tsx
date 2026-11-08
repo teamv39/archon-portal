@@ -1,3 +1,4 @@
+import { EmptyState } from "@/components/ui/empty-state"
 import * as React from "react"
 import {
   ReactFlow,
@@ -427,7 +428,17 @@ export function ArchitecturePage() {
         {/* Error State */}
         {isError && (
           <div className="absolute inset-0 z-20 flex items-center justify-center p-6 bg-zinc-950">
-            <ErrorState error={error} onRetry={() => refetch()} />
+            <ErrorState error={error} title="Не удалось построить архитектурный граф" onRetry={() => refetch()} />
+          </div>
+        )}
+
+        {/* Empty Graph State */}
+        {!isLoading && !isError && nodes.length === 0 && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center p-6 bg-zinc-950">
+            <EmptyState
+              title="Архитектурный граф пуст"
+              description="В системе еще нет зафиксированных сервисов. Граф сформируется автоматически после подключения репозиториев."
+            />
           </div>
         )}
 

@@ -396,11 +396,11 @@ export function ServicesPage() {
                 <TableRow>
                   <TableCell colSpan={columns.length} className="p-6">
                     <EmptyState
-                      title="Сервисы не найдены"
+                      title={isFiltered ? "Сервисы по заданным критериям не найдены" : "В организации пока нет подключенных сервисов"}
                       description={
                         isFiltered
-                          ? "По заданным условиям фильтрации ничего не найдено. Попробуйте изменить запрос или сбросить фильтры."
-                          : "В каталоге пока нет зарегистрированных микросервисов."
+                          ? "Попробуйте изменить параметры поиска или сбросить фильтры."
+                          : "Подключите репозитории через GitHub App для автоматического построения каталога."
                       }
                       actionLabel={isFiltered ? "Сбросить фильтры" : undefined}
                       onAction={isFiltered ? handleResetFilters : undefined}
