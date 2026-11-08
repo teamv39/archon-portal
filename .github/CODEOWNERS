@@ -1,0 +1,5 @@
+# Владелец инструкций для агентов и самого файла CODEOWNERS.
+# Правки этих файлов требуют review от @ischademadda
+# (включено через Branch protection: Require review from Code Owners).
+/AGENTS.md          @ischademadda
+/.github/CODEOWNERS @ischademadda
