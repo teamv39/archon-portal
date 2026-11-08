@@ -50,6 +50,27 @@
 * Коммиты: `ARCH-XX: Описание` (в соответствии с номерами тикетов в проектном трекере).
 * Пулл-реквесты: открываются в `main`, первичное код-ревью проводит Tech Lead (@dusk190).
 
+
+## Публикация Docker-образов
+
+При мерже в ветку `dev` или при создании релизного тега (`v*.*.*`) GitHub Actions автоматически собирает и публикует Docker-образы фронтенда (SPA) и бэкенда (BFF) в GitHub Container Registry.
+
+**Адреса опубликованных образов:**
+- Frontend (SPA): `ghcr.io/teamv39/archon-portal/frontend`
+- Backend (BFF): `ghcr.io/teamv39/archon-portal/bff`
+
+**Логика тегов:**
+- `dev` — актуальная сборка из ветки `dev` (обновляется при каждом пуше).
+- `sha-<hash>` — привязка к конкретному коммиту.
+- `1.0.0`, `1.0` (semver) — создаются автоматически при пуше тега.
+
+**Как скачать образы локально:**
+```bash
+docker pull ghcr.io/teamv39/archon-portal/frontend:dev
+docker pull ghcr.io/teamv39/archon-portal/bff:dev
+```
+
+
 ---
 
 ## Лицензия
