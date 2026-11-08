@@ -6,6 +6,10 @@ import type { Finding, Service, DiagramResponse } from '../types/api.js'
 export class CoreServiceClient {
     private pool: Pool
     constructor(coreServiceUrl: string) {
+        const parsed = new URL(coreServiceUrl)
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+            throw new Error(`Invalid protocol for CORE_SERVICE_URL: ${parsed.protocol}`)
+        }
         this.pool = new Pool(coreServiceUrl, {
             connections: 10,
             pipelining: 1,

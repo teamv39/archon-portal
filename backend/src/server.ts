@@ -71,7 +71,7 @@ const start = async () => {
   })
 
   const schema = S.object()
-    .prop('CORE_SERVICE_URL', S.string().format('uri').default('http://localhost:8080'))
+    .prop('CORE_SERVICE_URL', S.string().required().default('http://localhost:8080'))
     .prop('MOCK_MODE', S.boolean().default(true))
     .valueOf()
 
