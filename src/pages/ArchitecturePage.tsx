@@ -19,14 +19,13 @@ import { C4Node } from "@/components/diagram/C4Node"
 import { ServiceDetailsSheet } from "@/components/diagram/ServiceDetailsSheet"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { ErrorState } from "@/components/ui/error-state"
+import { ArchitectureMapSkeleton } from "@/components/ui/screen-skeletons"
 import {
   Network,
   Search,
   Maximize2,
   Minimize2,
-  RefreshCw,
-  AlertTriangle,
   Globe,
   Layers,
   Box,
@@ -160,7 +159,7 @@ const COMPONENT_EDGE_ROUTES: Record<
 }
 
 export function ArchitecturePage() {
-  const { data: diagramData, isLoading, isError, refetch } = useDiagram()
+  const { data: diagramData, isLoading, isError, error, refetch } = useDiagram()
 
   const [viewLevel, setViewLevel] = React.useState<C4ViewLevel>("container")
   const [searchQuery, setSearchQuery] = React.useState("")
@@ -423,25 +422,12 @@ export function ArchitecturePage() {
       {/* 3. Main Interactive Diagram Canvas */}
       <div className="flex-1 rounded-xl border border-zinc-800 bg-zinc-950/90 overflow-hidden relative shadow-inner">
         {/* Loading State */}
-        {isLoading && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-zinc-950/80 backdrop-blur-sm space-y-3">
-            <Skeleton className="h-10 w-10 rounded-full bg-zinc-800 animate-spin" />
-            <p className="text-xs text-zinc-400">Загрузка архитектурной модели...</p>
-          </div>
-        )}
+        {isLoading && <ArchitectureMapSkeleton />}
 
         {/* Error State */}
         {isError && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center p-6 text-center bg-zinc-950/90">
-            <AlertTriangle className="h-10 w-10 text-rose-500 mb-2" />
-            <h3 className="text-base font-semibold text-zinc-100">Не удалось загрузить схему</h3>
-            <p className="text-xs text-zinc-400 max-w-sm mt-1 mb-4">
-              Убедитесь, что сервер BFF работает и возвращает данные по роуту /api/diagrams/c4.
-            </p>
-            <Button variant="outline" size="sm" onClick={() => refetch()} className="text-xs">
-              <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-              Повторить попытку
-            </Button>
+          <div className="absolute inset-0 z-20 flex items-center justify-center p-6 bg-zinc-950">
+            <ErrorState error={error} onRetry={() => refetch()} />
           </div>
         )}
 
