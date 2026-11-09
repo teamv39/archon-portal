@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import type { Finding, ResolveFindingPayload } from '@/types/findings'
+import { apiFetch } from '@/lib/api-client'
 
 const LOCAL_STORAGE_OVERRIDES_KEY = 'archon_findings_overrides'
 
@@ -26,23 +27,12 @@ async function fetchFindings(params?: {
   severity?: string
 }): Promise<Finding[]> {
   const query = new URLSearchParams()
-  if (params?.status && params.status !== 'ALL') {
-    query.set('status', params.status)
-  }
-  if (params?.serviceId && params.serviceId !== 'all') {
-    query.set('serviceId', params.serviceId)
-  }
-  if (params?.severity && params.severity !== 'all') {
-    query.set('severity', params.severity)
-  }
+  if (params?.status && params.status !== 'ALL') query.set('status', params.status)
+  if (params?.serviceId && params.serviceId !== 'all') query.set('serviceId', params.serviceId)
+  if (params?.severity && params.severity !== 'all') query.set('severity', params.severity)
 
   const url = `/api/findings${query.toString() ? `?${query.toString()}` : ''}`
-  const res = await fetch(url)
-  if (!res.ok) {
-    throw new Error('Не удалось загрузить список находок')
-  }
-
-  const list: Finding[] = await res.json()
+  const list = await apiFetch<Finding[]>(url)
   const overrides = getLocalOverrides()
 
   return list
@@ -51,9 +41,7 @@ async function fetchFindings(params?: {
       return override ? { ...item, ...override } : item
     })
     .filter((item) => {
-      if (params?.status && params.status !== 'ALL' && item.status !== params.status) {
-        return false
-      }
+      if (params?.status && params.status !== 'ALL' && item.status !== params.status) return false
       return true
     })
 }
@@ -75,7 +63,7 @@ export function useResolveFinding() {
   return useMutation({
     mutationFn: async ({ id, status, reason, duration }: ResolveFindingPayload) => {
       try {
-        await fetch(`/api/findings/${id}`, {
+        await apiFetch(`/api/findings/${id}`, {
           method: 'PATCH',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ status, reason, duration }),
@@ -96,7 +84,6 @@ export function useResolveFinding() {
     },
     onMutate: async ({ id, status, reason, duration }) => {
       await queryClient.cancelQueries({ queryKey: ['findings'] })
-
       const previousQueries = queryClient.getQueriesData<Finding[]>({ queryKey: ['findings'] })
 
       queryClient.setQueriesData<Finding[]>({ queryKey: ['findings'] }, (old) => {
