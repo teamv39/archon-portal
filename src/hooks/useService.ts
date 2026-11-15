@@ -1,28 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import type { Service } from '@/types/services'
-
-const API_BASE = ''
-
-async function fetchServices(): Promise<Service[]> {
-  const res = await fetch(`${API_BASE}/api/services`)
-  if (!res.ok) {
-    throw new Error('Не удалось загрузить список сервисов')
-  }
-  return res.json()
-}
-
-async function fetchServiceById(id: string): Promise<Service> {
-  const res = await fetch(`${API_BASE}/api/services/${id}`)
-  if (!res.ok) {
-    throw new Error(`Не удалось загрузить сервис ${id}`)
-  }
-  return res.json()
-}
+import { apiFetch } from '@/lib/api-client'
 
 export function useServices() {
   return useQuery({
     queryKey: ['services'],
-    queryFn: fetchServices,
+    queryFn: () => apiFetch<Service[]>('/api/services'),
   })
 }
 
@@ -31,7 +14,7 @@ export function useService(id?: string) {
     queryKey: ['services', id],
     queryFn: () => {
       if (!id) throw new Error('ID сервиса не указан')
-      return fetchServiceById(id)
+      return apiFetch<Service>(`/api/services/${id}`)
     },
     enabled: Boolean(id),
   })

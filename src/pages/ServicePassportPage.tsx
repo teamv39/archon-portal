@@ -1,9 +1,11 @@
+import { EmptyState } from "@/components/ui/empty-state"
 import { useParams, useNavigate, Link } from "react-router-dom"
 import { useService } from "@/hooks/useService"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { ErrorState } from "@/components/ui/error-state"
+import { PassportSkeleton } from "@/components/ui/screen-skeletons"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   Table,
@@ -21,7 +23,6 @@ import {
   Users,
   Cpu,
   GitFork,
-  RefreshCw,
   FileCode,
   Radio,
   Database,
@@ -35,43 +36,23 @@ import {
 export function ServicePassportPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { data: service, isLoading, isError, refetch } = useService(id)
+  const { data: service, isLoading, isError, error, refetch } = useService(id)
 
   if (isLoading) {
-    return (
-      <div className="space-y-6 max-w-5xl">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-9 w-24" />
-          <Skeleton className="h-6 w-48" />
-        </div>
-        <div className="space-y-2">
-          <Skeleton className="h-8 w-80" />
-          <Skeleton className="h-4 w-96" />
-        </div>
-        <Skeleton className="h-10 w-96" />
-        <Skeleton className="h-64" />
-      </div>
-    )
+    return <PassportSkeleton />
   }
 
   if (isError || !service) {
     return (
-      <div className="flex flex-col items-center justify-center p-12 text-center border rounded-lg bg-card max-w-2xl mx-auto mt-8">
-        <AlertTriangle className="h-12 w-12 text-destructive mb-3" />
-        <h2 className="text-xl font-semibold mb-2">Сервис не найден</h2>
-        <p className="text-muted-foreground text-sm mb-6">
-          Не удалось загрузить данные паспорта сервиса &laquo;{id}&raquo;.
-        </p>
-        <div className="flex gap-3">
-          <Button variant="outline" onClick={() => navigate('/services')}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            В каталог сервисов
-          </Button>
-          <Button onClick={() => refetch()}>
-            <RefreshCw className="h-4 w-4 mr-2" />
-            Повторить
-          </Button>
-        </div>
+      <div className="max-w-xl mx-auto mt-8">
+        <ErrorState
+          error={error}
+          title={!service && !isError ? "Сервис не найден" : undefined}
+          description={!service && !isError ? `Сервис «${id}» не найден в графе знаний платформы.` : undefined}
+          onRetry={() => refetch()}
+          onBack={() => navigate("/services")}
+          backLabel="Вернуться в каталог"
+        />
       </div>
     )
   }
@@ -322,9 +303,11 @@ export function ServicePassportPage() {
                   </Table>
                 </div>
               ) : (
-                <div className="p-8 text-center text-sm text-muted-foreground border rounded-md bg-muted/20">
-                  У этого сервиса нет зарегистрированных исходящих зависимостей.
-                </div>
+                <EmptyState
+                  title="Нет исходящих зависимостей"
+                  description="У этого сервиса нет зарегистрированных исходящих вызовов."
+                  className="min-h-[160px] py-6"
+                />
               )}
             </CardContent>
           </Card>
@@ -453,9 +436,11 @@ export function ServicePassportPage() {
                   ))}
                 </div>
               ) : (
-                <div className="p-8 text-center text-sm text-muted-foreground border rounded-md bg-muted/20">
-                  У этого сервиса нет задекларированных публичных API-контрактов.
-                </div>
+                <EmptyState
+                  title="Нет публичных контрактов"
+                  description="Сервис не экспортирует публичных HTTP-контрактов (фоновый обработчик)."
+                  className="min-h-[160px] py-6"
+                />
               )}
             </CardContent>
           </Card>

@@ -7,16 +7,15 @@ import { RiskAcceptanceDialog } from "@/components/findings/RiskAcceptanceDialog
 import { CustomSelect } from "@/components/ui/custom-select"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { ErrorState } from "@/components/ui/error-state"
+import { InboxListSkeleton } from "@/components/ui/screen-skeletons"
 import {
   Dialog,
   DialogContent,
 } from "@/components/ui/dialog"
 import {
   Search,
-  AlertTriangle,
-  RefreshCw,
-  SearchX,
   X,
   ChevronRight,
   Inbox,
@@ -26,7 +25,7 @@ import {
 } from "lucide-react"
 
 export function InboxPage() {
-  const { data: findings = [], isLoading, isError, refetch } = useFindings()
+  const { data: findings = [], isLoading, isError, error, refetch } = useFindings()
   const resolveFindingMutation = useResolveFinding()
 
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
@@ -303,46 +302,13 @@ export function InboxPage() {
 
       {/* Error State */}
       {isError && (
-        <div className="p-8 text-center flex flex-col items-center justify-center rounded-lg border border-rose-500/30 bg-rose-500/5">
-          <AlertTriangle className="h-10 w-10 text-rose-500 mb-3" />
-          <h3 className="font-semibold text-base mb-1 text-zinc-100">
-            Не удалось загрузить находки
-          </h3>
-          <p className="text-sm text-zinc-400 max-w-md mb-4">
-            Проверьте подключение к Fastify BFF серверу на порту 5000.
-          </p>
-          <Button variant="outline" size="sm" onClick={() => refetch()}>
-            <RefreshCw className="h-3.5 w-3.5 mr-2" />
-            Повторить попытку
-          </Button>
+        <div className="mb-6">
+          <ErrorState error={error} onRetry={() => refetch()} />
         </div>
       )}
 
       {/* Loading Skeletons */}
-      {isLoading && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 h-[600px]">
-          <div className="space-y-3">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div
-                key={`skel-${i}`}
-                className="p-4 rounded-lg border border-zinc-800 bg-zinc-900 space-y-2"
-              >
-                <div className="flex justify-between">
-                  <Skeleton className="h-4 w-28 bg-zinc-800" />
-                  <Skeleton className="h-4 w-16 bg-zinc-800" />
-                </div>
-                <Skeleton className="h-5 w-4/5 bg-zinc-800" />
-                <Skeleton className="h-3 w-32 bg-zinc-800" />
-              </div>
-            ))}
-          </div>
-          <div className="rounded-lg border border-zinc-800 bg-zinc-900 p-6">
-            <Skeleton className="h-8 w-1/2 mb-4 bg-zinc-800" />
-            <Skeleton className="h-32 w-full mb-4 bg-zinc-800" />
-            <Skeleton className="h-24 w-full bg-zinc-800" />
-          </div>
-        </div>
-      )}
+      {isLoading && <InboxListSkeleton />}
 
       {/* 3. Master-Detail Layout: Left (50%) List | Right (50%) Evidence Review */}
       {!isLoading && !isError && (
@@ -350,25 +316,18 @@ export function InboxPage() {
           {/* Master List (50% = 6 cols) */}
           <div className="lg:col-span-6 flex flex-col space-y-2.5">
             {filteredFindings.length === 0 ? (
-              <div className="h-80 rounded-lg border border-zinc-800 bg-zinc-900 flex flex-col items-center justify-center p-6 text-center">
-                <SearchX className="h-10 w-10 text-zinc-500 mb-2" />
-                <p className="font-semibold text-sm text-zinc-200">Находки не найдены</p>
-                <p className="text-xs text-zinc-400 mt-1 max-w-xs">
-                  {isFiltered
-                    ? "По заданным фильтрам нет подходящих расхождений."
-                    : "В инбоксе пока нет зарегистрированных находок."}
-                </p>
-                {isFiltered && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleResetFilters}
-                    className="mt-3 text-xs border-zinc-700 bg-zinc-800 hover:bg-zinc-700 text-zinc-200"
-                  >
-                    Сбросить фильтры
-                  </Button>
-                )}
-              </div>
+              <EmptyState
+                variant={!isFiltered ? "success" : "default"}
+                title={!isFiltered ? "Расхождений не обнаружено" : "Находки не найдены"}
+                description={
+                  !isFiltered
+                    ? "Архитектурная документация на 100% синхронизирована с кодом."
+                    : "По заданным фильтрам нет подходящих расхождений."
+                }
+                actionLabel={isFiltered ? "Сбросить фильтры" : undefined}
+                onAction={isFiltered ? handleResetFilters : undefined}
+                className="min-h-[420px]"
+              />
             ) : (
               filteredFindings.map((finding) => {
                 const isSelected = finding.id === activeSelectedId
