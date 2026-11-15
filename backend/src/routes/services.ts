@@ -51,7 +51,7 @@ async function getAggregatedService(
   if (!coreService) {
     return null
   }
-  const details = readJsonFixture<MockServiceDetails>('mock_service_details.json')
+  const details = readJsonFixture<MockServiceDetails>('mock_service_details.json') // MOCK
   const hasCriticalFindings = (findings ?? []).some(
     (f) => f.severity === 'CRITICAL' && f.status !== 'RISK_ACCEPTED'
   )
@@ -69,10 +69,19 @@ async function getAggregatedService(
 
 export const servicesRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/services', async () => {
-    return getServices()
+    if (fastify.config.MOCK_MODE) {
+      return getServices()
+    }
+
+    const services = await fastify.coreClient.getServices()
+    if (!services) {
+      return null
+    }
+
+    return services
   })
 
-    fastify.get<{ Params: { id: string } }>('/services/:id', async (request, reply) => {
+  fastify.get<{ Params: { id: string } }>('/services/:id', async (request, reply) => {
     const { id } = request.params
 
     if (fastify.config.MOCK_MODE) {
@@ -94,7 +103,11 @@ export const servicesRoutes: FastifyPluginAsync = async (fastify) => {
   })
 
   fastify.get('/contracts', async () => {
-    const data = readJsonFixture<MockDataset>('mock_mcp_data.json')
-    return data.contracts
+    if (fastify.config.MOCK_MODE) {
+      const data = readJsonFixture<MockDataset>('mock_mcp_data.json')
+      return data.contracts
+    }
+
+    return null
   })
 }
