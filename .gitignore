@@ -23,3 +23,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# компилируемые файлы бэкенда
+backend/src/*.js
+backend/src/*.js.map
+backend/src/*.d.ts
+backend/src/*.d.ts.map
