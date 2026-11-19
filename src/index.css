@@ -50,15 +50,11 @@
 }
 
 @layer base {
-  html {
-    font-size: 18px;
-  }
-
   * {
     @apply border-border;
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans text-sm antialiased;
   }
 }

@@ -145,7 +145,7 @@ function C4NodeComponent({ data, selected }: NodeProps) {
       </div>
 
       {/* Node Title */}
-      <div className="font-semibold text-sm text-zinc-100 leading-tight truncate mb-2">
+      <div className="font-semibold text-sm font-mono text-zinc-100 leading-tight truncate mb-2">
         {title}
       </div>
 

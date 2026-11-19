@@ -76,7 +76,7 @@ export function ErrorState({
           <div className="flex items-center justify-between border-b border-zinc-800/80 pb-2">
             <span className="text-xs text-zinc-500">Диагностика запроса</span>
             {safe.status ? (
-              <Badge variant="outline" className="border-rose-500/40 bg-rose-500/10 text-rose-400 text-xs">
+              <Badge variant="outline" className="border-rose-500/40 bg-rose-500/10 text-rose-400 font-mono text-xs">
                 HTTP {safe.status}
               </Badge>
             ) : null}

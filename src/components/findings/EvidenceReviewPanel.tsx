@@ -150,7 +150,7 @@ export function EvidenceReviewPanel({
                 )}
               </div>
 
-              <div className="p-3.5 flex-1 text-xs text-zinc-300 font-sans leading-relaxed whitespace-pre-wrap bg-zinc-950/40 border-l-2 border-indigo-500/50">
+              <div className="p-3.5 flex-1 text-xs text-zinc-300 font-mono leading-relaxed whitespace-pre-wrap bg-zinc-950/40 border-l-2 border-indigo-500/50">
                 {evidence.docQuote ? (
                   evidence.docQuote
                 ) : (
