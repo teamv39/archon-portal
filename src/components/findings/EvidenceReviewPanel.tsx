@@ -187,7 +187,10 @@ export function EvidenceReviewPanel({
                 )}
               </div>
 
-              <div className="p-3.5 flex-1 bg-zinc-950 overflow-x-auto border-l-2 border-emerald-500/50 font-mono text-xs text-zinc-200 leading-relaxed whitespace-pre">
+              <div
+                className="p-3.5 flex-1 bg-zinc-950 overflow-x-auto border-l-2 border-emerald-500/50 font-mono text-zinc-200 leading-relaxed whitespace-pre"
+                style={{ fontSize: "var(--inbox-code-size, 12px)" }}
+              >
                 {evidence.codeSnippet ? (
                   evidence.codeSnippet
                 ) : (

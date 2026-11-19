@@ -385,7 +385,14 @@ export function ServicesPage() {
                     className="cursor-pointer transition-colors hover:bg-muted/60 data-[state=selected]:bg-muted"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-3">
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          paddingTop: "var(--catalog-row-padding, 0.5rem)",
+                          paddingBottom: "var(--catalog-row-padding, 0.5rem)",
+                          fontSize: "var(--catalog-text-size, 13px)",
+                        }}
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}

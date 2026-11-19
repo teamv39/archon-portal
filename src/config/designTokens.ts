@@ -121,4 +121,62 @@ export class DesignTokens {
     cellText: "text-sm text-zinc-300",
     cellMono: "font-mono font-medium text-zinc-100",
   } as const
+
+  // Параметры архитектурной карты C4 и узлов графа
+  static readonly c4 = {
+    // Внешние габариты и контейнер узла
+    node: {
+      dimensions: "min-w-[220px] max-w-[260px]",
+      base: "relative rounded-xl border bg-zinc-900 p-3.5 shadow-lg select-none cursor-pointer will-change-transform transition-[border-color,box-shadow] duration-150",
+      selected: "ring-2 ring-indigo-500 border-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.35)]",
+      drift: "border-rose-500/70 shadow-[0_0_15px_rgba(244,63,94,0.2)] hover:border-rose-400",
+      sync: "border-zinc-800 hover:border-emerald-500/50 hover:shadow-[0_0_12px_rgba(16,185,129,0.15)]",
+      default: "border-zinc-800 hover:border-zinc-700",
+    },
+
+    // Верхняя мета-информация (тип узла + тир)
+    meta: {
+      row: "flex items-center justify-between gap-1.5 mb-2",
+      typeLabel: "flex items-center gap-1.5 text-[11px] font-medium text-zinc-400",
+      tierBadge: "text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30",
+    },
+
+    // Цвета иконок по типам сущностей
+    typeColors: {
+      database: "text-sky-400",
+      queue: "text-amber-400",
+      system: "text-indigo-400",
+      component: "text-violet-400",
+      service: "text-indigo-400",
+    },
+
+    // Заголовок ноды (ID сервиса / базы)
+    title: {
+      text: "font-semibold text-sm font-mono text-zinc-100 leading-tight truncate mb-2",
+    },
+
+    // Нижний статус-бар (дрейф, счетчики зависимостей)
+    footer: {
+      row: "flex items-center justify-between pt-2 border-t border-zinc-800/80 text-[11px]",
+      drift: "flex items-center gap-1 font-medium text-rose-400",
+      sync: "flex items-center gap-1 font-medium text-emerald-400",
+      infra: "text-zinc-500 font-mono text-[10px]",
+      counter: "text-zinc-500 font-mono text-[10px]",
+      icon: "h-3 w-3",
+    },
+
+    // Цветовая схема для мини-карты
+    minimapColors: {
+      drift: "#f43f5e",
+      sync: "#10b981",
+      database: "#38bdf8",
+      queue: "#f59e0b",
+      service: "#6366f1",
+    },
+
+    // Контейнер холста карты C4
+    canvas: {
+      container: "h-[calc(100vh-theme(spacing.14)-theme(spacing.12))] flex flex-col relative rounded-xl border border-zinc-800 overflow-hidden bg-zinc-950",
+    },
+  } as const
 }

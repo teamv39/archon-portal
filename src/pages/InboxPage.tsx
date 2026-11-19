@@ -335,7 +335,8 @@ export function InboxPage() {
                   <div
                     key={finding.id}
                     onClick={() => setSelectedId(finding.id)}
-                    className={`cursor-pointer rounded-lg border p-4 transition-all duration-150 flex flex-col gap-2 relative ${
+                    style={{ padding: "var(--inbox-card-padding, 0.875rem)" }}
+                    className={`cursor-pointer rounded-lg border transition-all duration-150 flex flex-col gap-2 relative ${
                       isSelected
                         ? "bg-zinc-850 border-indigo-500/70 shadow-md ring-1 ring-indigo-500/30"
                         : "bg-zinc-900 border-zinc-800 hover:border-zinc-700 hover:bg-zinc-850/60"

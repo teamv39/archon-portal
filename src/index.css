@@ -23,7 +23,29 @@
     --border: 240 5.9% 90%;
     --input: 240 5.9% 90%;
     --ring: 240 10% 3.9%;
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* Dev Tokens: Global */
+    --dev-layout-width: 100%;
+
+    /* Dev Tokens: Service Passport */
+    --passport-hero-padding: 1.5rem;
+    --passport-metric-padding: 1rem;
+    --passport-metric-value-size: 1.5rem;
+    --passport-finding-padding: 0.875rem;
+
+    /* Dev Tokens: Service Catalog */
+    --catalog-row-padding: 0.5rem;
+    --catalog-text-size: 13px;
+
+    /* Dev Tokens: Findings Inbox */
+    --inbox-code-size: 12px;
+    --inbox-card-padding: 0.875rem;
+
+    /* Dev Tokens: C4 Architecture Map */
+    --c4-node-width: 240px;
+    --c4-node-radius: 0.75rem;
+    --c4-drift-glow: 0 0 16px rgba(244, 63, 94, 0.25);
   }
 
   .dark {

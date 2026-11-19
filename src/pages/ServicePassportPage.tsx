@@ -91,7 +91,7 @@ export function ServicePassportPage() {
         <span className={DesignTokens.layout.breadcrumbCurrent}>{service.id || service.name}</span>
       </div>
 
-      <div className={DesignTokens.hero.card}>
+      <div className={DesignTokens.hero.card} style={{ padding: "var(--passport-hero-padding, 1.5rem)" }}>
         <div className={DesignTokens.hero.contentCol}>
           <h1 className={DesignTokens.hero.title}>
             {service.id || service.name}
@@ -181,33 +181,33 @@ export function ServicePassportPage() {
 
         <TabsContent value="overview" className={DesignTokens.tabs.content}>
           <div className={DesignTokens.metrics.grid}>
-            <div className={DesignTokens.metrics.card}>
+            <div className={DesignTokens.metrics.card} style={{ padding: "var(--passport-metric-padding, 1rem)" }}>
               <span className={DesignTokens.metrics.label}>Эндпоинты</span>
-              <div className={DesignTokens.metrics.value}>
+              <div className={DesignTokens.metrics.value} style={{ fontSize: "var(--passport-metric-value-size, 1.5rem)" }}>
                 {contracts.length}
               </div>
               <span className={DesignTokens.metrics.subtext}>в контрактах API</span>
             </div>
 
-            <div className={DesignTokens.metrics.card}>
+            <div className={DesignTokens.metrics.card} style={{ padding: "var(--passport-metric-padding, 1rem)" }}>
               <span className={DesignTokens.metrics.label}>Входящие потребители</span>
-              <div className={DesignTokens.metrics.value}>
+              <div className={DesignTokens.metrics.value} style={{ fontSize: "var(--passport-metric-value-size, 1.5rem)" }}>
                 3 сервиса
               </div>
               <span className={DesignTokens.metrics.subtext}>вызывают этот сервис</span>
             </div>
 
-            <div className={DesignTokens.metrics.card}>
+            <div className={DesignTokens.metrics.card} style={{ padding: "var(--passport-metric-padding, 1rem)" }}>
               <span className={DesignTokens.metrics.label}>Исходящие зависимости</span>
-              <div className={DesignTokens.metrics.value}>
+              <div className={DesignTokens.metrics.value} style={{ fontSize: "var(--passport-metric-value-size, 1.5rem)" }}>
                 {outgoingCalls.length} сервисов{databases.length > 0 ? `, ${databases.length} БД` : ""}
               </div>
               <span className={DesignTokens.metrics.subtext}>вызывает этот сервис</span>
             </div>
 
-            <div className={DesignTokens.metrics.card}>
+            <div className={DesignTokens.metrics.card} style={{ padding: "var(--passport-metric-padding, 1rem)" }}>
               <span className={DesignTokens.metrics.label}>Первое появление</span>
-              <div className={DesignTokens.metrics.valueMono}>
+              <div className={DesignTokens.metrics.valueMono} style={{ fontSize: "var(--passport-metric-value-size, 1.5rem)" }}>
                 03.03.2026
               </div>
               <span className={DesignTokens.metrics.subtext}>дата в графе знаний</span>
@@ -262,6 +262,7 @@ export function ServicePassportPage() {
                     key={finding.id}
                     onClick={() => navigate(`/findings?serviceId=${service.id}&findingId=${finding.id}`)}
                     className={DesignTokens.findings.row}
+                    style={{ padding: "var(--passport-finding-padding, 0.875rem)" }}
                   >
                     <div className={DesignTokens.findings.leftCol}>
                       <FindingSeverityBadge severity={finding.severity} />
