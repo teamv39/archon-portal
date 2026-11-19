@@ -19,15 +19,18 @@
     },
     {
       "id": "billing-service",
-      "name": "Billing Service",
-      "tier": 2,
-      "language": "Java",
-      "framework": "Spring Boot 3",
+      "name": "billing-service",
+      "tier": 1,
+      "language": "Kotlin",
+      "framework": "1.9",
       "repo_url": "github.com/acme/billing-service",
-      "owner_team": "Payments",
+      "owner_team": "payments",
       "outgoing_calls": [
         { "target": "order-service", "protocol": "REST", "contract": "c-get-order", "is_defect_cycle": true },
-        { "target": "notification-service", "protocol": "KAFKA", "topic": "order.paid" }
+        { "target": "notification-service", "protocol": "KAFKA", "topic": "order.paid" },
+        { "target": "ledger-service", "protocol": "REST", "contract": "c-post-ledger" },
+        { "target": "fraud-service", "protocol": "gRPC", "contract": "c-check-fraud" },
+        { "target": "analytics-service", "protocol": "KAFKA", "topic": "billing.events" }
       ]
     },
     {

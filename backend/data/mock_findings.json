@@ -1,5 +1,39 @@
 [
   {
+    "id": "FINDING-109",
+    "serviceId": "billing-service",
+    "title": "Нарушена политика No-Cycles: цикл billing → ledger",
+    "category": "CIRCULAR_DEPENDENCY",
+    "severity": "HIGH",
+    "status": "NEW",
+    "createdAt": "2026-11-14T18:30:00.000Z",
+    "evidence": {
+      "docFile": "docs/architecture/sample-architecture.md",
+      "docQuote": "Сервис billing-service НЕ должен иметь синхронных вызовов в ledger-service (предотвращение циклических зависимостей).",
+      "codeFile": "src/client/LedgerClient.kt",
+      "codeLines": "L28-L35",
+      "codeSnippet": "fun recordEntry(entry: LedgerEntry) {\n    return restTemplate.postForObject(\"http://ledger-service/api/v1/ledger\", entry, Void::class.java)\n}",
+      "verdict": "Синтаксический AST-разбор зафиксировал синхронный REST-вызов ledger-service из billing-service. В графе обнаружен цикл billing -> ledger -> billing."
+    }
+  },
+  {
+    "id": "FINDING-104",
+    "serviceId": "billing-service",
+    "title": "Эндпоинт /v1/pay в документации, /v2/pay в коде",
+    "category": "UNDOCUMENTED_ENDPOINT",
+    "severity": "CRITICAL",
+    "status": "NEW",
+    "createdAt": "2026-11-17T19:15:00.000Z",
+    "evidence": {
+      "docFile": "docs/api/billing-openapi.yaml",
+      "docQuote": "paths:\n  /v1/pay:\n    post:\n      summary: Проведение платежа",
+      "codeFile": "src/controllers/PaymentController.kt",
+      "codeLines": "L42-L48",
+      "codeSnippet": "@PostMapping(\"/v2/pay\")\nfun processPayment(@RequestBody req: PaymentRequest): PaymentResponse {\n    return paymentService.pay(req)\n}",
+      "verdict": "Маршрут в коде контроллера (/v2/pay) не соответствует задокументированному контракту (/v1/pay)."
+    }
+  },
+  {
     "id": "FINDING-101",
     "serviceId": "billing-service",
     "title": "Циклическая зависимость: billing-service ↔ order-service",

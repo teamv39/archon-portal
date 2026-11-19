@@ -47,7 +47,7 @@ const descriptions: Record<string, string> = {
 
 const databasesMap: Record<string, string[]> = {
   'order-service': ['PostgreSQL 16', 'Redis Cluster'],
-  'billing-service': ['PostgreSQL 16'],
+  'billing-service': ['PostgreSQL 16', 'Redis Cluster'],
   'inventory-service': ['PostgreSQL 16', 'Redis Cache'],
   'delivery-service': ['MongoDB 7.0'],
   'notification-service': ['Redis PubSub'],
@@ -67,6 +67,21 @@ const additionalContracts: Record<
   string,
   Array<{ endpoint: string; method: string; protocol: string; description: string; docStatus: 'DOCUMENTED' | 'NEEDS_UPDATE' | 'UNDOCUMENTED' }>
 > = {
+  'billing-service': [
+    { endpoint: '/api/v1/invoices/:id', method: 'GET', protocol: 'REST', description: 'Получение статуса и деталей сформированного инвойса', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/invoices/:id/cancel', method: 'POST', protocol: 'REST', description: 'Отмена неоплаченного инвойса покупателем или системой', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/payments/process', method: 'POST', protocol: 'REST', description: 'Инициация списания средств через платежный шлюз', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/payments/:id/refund', method: 'POST', protocol: 'REST', description: 'Оформление полного или частичного возврата средств', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/payments/:id/status', method: 'GET', protocol: 'REST', description: 'Проверка статуса транзакции в процессинговом центре', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/payouts', method: 'POST', protocol: 'REST', description: 'Регистрация выплаты мерчанту по закрытому реестру', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/payouts/:id', method: 'GET', protocol: 'REST', description: 'Детализация выплаты и комиссии эквайринга', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/cards/tokenize', method: 'POST', protocol: 'REST', description: 'Безопасная токенизация банковской карты в PCI DSS контуре', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/cards/:token/delete', method: 'DELETE', protocol: 'REST', description: 'Отзыв токена сохраненной банковской карты', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/ledger/sync', method: 'POST', protocol: 'gRPC', description: 'Синхронизация проводок с бухгалтерским регистром', docStatus: 'NEEDS_UPDATE' },
+    { endpoint: '/api/v1/fraud/validate', method: 'POST', protocol: 'gRPC', description: 'Скоринг транзакции антифрод-системой в реальном времени', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v1/tax/receipt', method: 'POST', protocol: 'REST', description: 'Фискализация чека в онлайн-кассе (54-ФЗ)', docStatus: 'DOCUMENTED' },
+    { endpoint: '/api/v2/pay', method: 'POST', protocol: 'REST', description: 'Новый протокол быстрой оплаты через СБП QR', docStatus: 'UNDOCUMENTED' },
+  ],
   'order-service': [
     { endpoint: '/api/v1/orders', method: 'POST', protocol: 'REST', description: 'Оформление и валидация нового заказа', docStatus: 'DOCUMENTED' },
     { endpoint: '/api/v1/orders/:id', method: 'GET', protocol: 'REST', description: 'Получение детальной информации о заказе', docStatus: 'DOCUMENTED' },
@@ -105,7 +120,7 @@ function getServices(): Service[] {
       id: s.id,
       name: s.name,
       owner: s.owner_team,
-      stack: `${s.language} / ${s.framework}`,
+      stack: s.language === 'Kotlin' && s.framework === '1.9' ? 'Kotlin 1.9' : `${s.language} / ${s.framework}`,
       driftStatus: isDrift ? 'drift_detected' : 'in_sync',
       dependenciesCount: s.outgoing_calls.length,
       description: descriptions[s.id] || `Микросервис ${s.name} (${s.owner_team}).`,

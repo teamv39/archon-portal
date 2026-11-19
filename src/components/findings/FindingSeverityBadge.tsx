@@ -23,7 +23,8 @@ const severityConfig: Record<Severity, { label: string; className: string }> = {
 export function FindingSeverityBadge({ severity }: { severity: Severity }) {
   const config = severityConfig[severity] || severityConfig.LOW
   return (
-    <Badge variant="outline" className={config.className}>
+    <Badge variant="outline" className={`${config.className} inline-flex items-center gap-1.5`}>
+      <span className="h-1.5 w-1.5 rounded-full bg-current shrink-0" />
       {config.label}
     </Badge>
   )
