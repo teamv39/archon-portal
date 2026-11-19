@@ -8,6 +8,7 @@ import { ErrorState } from "@/components/ui/error-state"
 import { PassportSkeleton } from "@/components/ui/screen-skeletons"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FindingSeverityBadge } from "@/components/findings/FindingSeverityBadge"
+import { DesignTokens } from "@/config/designTokens"
 import {
   Table,
   TableBody,
@@ -77,59 +78,59 @@ export function ServicePassportPage() {
   )
 
   return (
-    <div className="space-y-6 w-full">
-      <div className="flex items-center gap-2 text-sm text-zinc-400">
+    <div className={DesignTokens.layout.container}>
+      <div className={DesignTokens.layout.breadcrumbs}>
         <button
           onClick={() => navigate("/services")}
-          className="flex items-center gap-1.5 hover:text-zinc-100 transition-colors"
+          className={DesignTokens.layout.breadcrumbLink}
         >
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className={DesignTokens.layout.breadcrumbIcon} />
           Каталог сервисов
         </button>
-        <ChevronRight className="h-3.5 w-3.5 text-zinc-600" />
-        <span className="font-mono text-zinc-100">{service.id || service.name}</span>
+        <ChevronRight className={DesignTokens.layout.breadcrumbChevron} />
+        <span className={DesignTokens.layout.breadcrumbCurrent}>{service.id || service.name}</span>
       </div>
 
-      <div className="rounded-xl border border-zinc-800 bg-zinc-900/90 p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 shadow-sm">
-        <div className="space-y-3">
-          <h1 className="text-3xl font-mono font-bold tracking-tight text-zinc-100">
+      <div className={DesignTokens.hero.card}>
+        <div className={DesignTokens.hero.contentCol}>
+          <h1 className={DesignTokens.hero.title}>
             {service.id || service.name}
           </h1>
 
-          <div className="flex items-center gap-2.5 flex-wrap">
+          <div className={DesignTokens.hero.badgesRow}>
             {isDriftDetected ? (
-              <Badge className="bg-rose-500/10 text-rose-500 border border-rose-500/30 flex items-center gap-1.5 px-2.5 py-0.5 font-medium">
-                <span className="h-1.5 w-1.5 rounded-full bg-rose-500" />
+              <Badge className={DesignTokens.badges.drift}>
+                <span className={DesignTokens.badges.dotDrift} />
                 Drift Detected
               </Badge>
             ) : (
-              <Badge className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5 px-2.5 py-0.5 font-medium">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              <Badge className={DesignTokens.badges.sync}>
+                <span className={DesignTokens.badges.dotSync} />
                 In Sync
               </Badge>
             )}
 
-            <Badge className="bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 font-medium">
+            <Badge className={DesignTokens.badges.tier}>
               Tier-{service.tier ?? 1}
             </Badge>
 
-            <span className="px-2.5 py-0.5 rounded-md text-xs font-mono bg-zinc-800 text-zinc-300">
+            <span className={DesignTokens.badges.teamTag}>
               @{service.owner ? service.owner.toLowerCase() : "payments"}
             </span>
 
-            <span className="px-2 py-0.5 text-xs text-zinc-400 font-mono">
+            <span className={DesignTokens.badges.stackTag}>
               {service.stack}
             </span>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className={DesignTokens.hero.actionsRow}>
           {service.repoUrl && (
             <Button
               variant="outline"
               size="sm"
               asChild
-              className="border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-200"
+              className={DesignTokens.hero.actionButton}
             >
               <a
                 href={service.repoUrl.startsWith("http") ? service.repoUrl : `https://${service.repoUrl}`}
@@ -137,7 +138,7 @@ export function ServicePassportPage() {
                 rel="noopener noreferrer"
               >
                 Репозиторий
-                <ExternalLink className="h-3.5 w-3.5 ml-1.5" />
+                <ExternalLink className={DesignTokens.hero.actionIcon} />
               </a>
             </Button>
           )}
@@ -146,93 +147,93 @@ export function ServicePassportPage() {
             variant="outline"
             size="sm"
             asChild
-            className="border-zinc-800 bg-zinc-900/60 hover:bg-zinc-800 text-zinc-200"
+            className={DesignTokens.hero.actionButton}
           >
             <Link to="/architecture">
-              <Network className="h-3.5 w-3.5 mr-1.5 text-zinc-400" />
+              <Network className={DesignTokens.hero.actionIconLeft} />
               C4 Карта
             </Link>
           </Button>
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="bg-zinc-900/80 border border-zinc-800 p-1 rounded-lg">
+      <Tabs defaultValue="overview" className={DesignTokens.tabs.container}>
+        <TabsList className={DesignTokens.tabs.list}>
           <TabsTrigger
             value="overview"
-            className="data-[state=active]:bg-zinc-800 data-[state=active]:text-zinc-100 text-zinc-400"
+            className={DesignTokens.tabs.trigger}
           >
             Обзор
           </TabsTrigger>
           <TabsTrigger
             value="dependencies"
-            className="data-[state=active]:bg-zinc-800 data-[state=active]:text-zinc-100 text-zinc-400"
+            className={DesignTokens.tabs.trigger}
           >
             Зависимости ({outgoingCalls.length})
           </TabsTrigger>
           <TabsTrigger
             value="contracts"
-            className="data-[state=active]:bg-zinc-800 data-[state=active]:text-zinc-100 text-zinc-400"
+            className={DesignTokens.tabs.trigger}
           >
             Контракты ({contracts.length})
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-6 mt-0">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 flex flex-col justify-between">
-              <span className="text-xs font-medium text-zinc-400">Эндпоинты</span>
-              <div className="my-2 text-2xl font-bold tracking-tight text-zinc-100">
+        <TabsContent value="overview" className={DesignTokens.tabs.content}>
+          <div className={DesignTokens.metrics.grid}>
+            <div className={DesignTokens.metrics.card}>
+              <span className={DesignTokens.metrics.label}>Эндпоинты</span>
+              <div className={DesignTokens.metrics.value}>
                 {contracts.length}
               </div>
-              <span className="text-xs text-zinc-500">в контрактах API</span>
+              <span className={DesignTokens.metrics.subtext}>в контрактах API</span>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 flex flex-col justify-between">
-              <span className="text-xs font-medium text-zinc-400">Входящие потребители</span>
-              <div className="my-2 text-2xl font-bold tracking-tight text-zinc-100">
+            <div className={DesignTokens.metrics.card}>
+              <span className={DesignTokens.metrics.label}>Входящие потребители</span>
+              <div className={DesignTokens.metrics.value}>
                 3 сервиса
               </div>
-              <span className="text-xs text-zinc-500">вызывают этот сервис</span>
+              <span className={DesignTokens.metrics.subtext}>вызывают этот сервис</span>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 flex flex-col justify-between">
-              <span className="text-xs font-medium text-zinc-400">Исходящие зависимости</span>
-              <div className="my-2 text-2xl font-bold tracking-tight text-zinc-100">
+            <div className={DesignTokens.metrics.card}>
+              <span className={DesignTokens.metrics.label}>Исходящие зависимости</span>
+              <div className={DesignTokens.metrics.value}>
                 {outgoingCalls.length} сервисов{databases.length > 0 ? `, ${databases.length} БД` : ""}
               </div>
-              <span className="text-xs text-zinc-500">вызывает этот сервис</span>
+              <span className={DesignTokens.metrics.subtext}>вызывает этот сервис</span>
             </div>
 
-            <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-4 flex flex-col justify-between">
-              <span className="text-xs font-medium text-zinc-400">Первое появление</span>
-              <div className="my-2 text-2xl font-mono font-bold tracking-tight text-zinc-100">
+            <div className={DesignTokens.metrics.card}>
+              <span className={DesignTokens.metrics.label}>Первое появление</span>
+              <div className={DesignTokens.metrics.valueMono}>
                 03.03.2026
               </div>
-              <span className="text-xs text-zinc-500">дата в графе знаний</span>
+              <span className={DesignTokens.metrics.subtext}>дата в графе знаний</span>
             </div>
           </div>
 
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/60 p-6 space-y-4">
-            <div>
-              <h3 className="text-base font-semibold text-zinc-100">Описание сервиса</h3>
-              <p className="text-xs text-zinc-400 mt-0.5">
+          <div className={DesignTokens.description.card}>
+            <div className={DesignTokens.description.headerCol}>
+              <h3 className={DesignTokens.description.title}>Описание сервиса</h3>
+              <p className={DesignTokens.description.subtitle}>
                 Назначение и зона ответственности в доменной архитектуре
               </p>
             </div>
-            <p className="text-sm text-zinc-300 leading-relaxed">
+            <p className={DesignTokens.description.body}>
               {service.description ||
                 "Формирование инвойсов, процессинг платежей и публикация событий в брокер сообщений Kafka."}
             </p>
 
             {isDriftDetected && (
-              <div className="rounded-lg border border-rose-500/30 bg-rose-500/5 p-4 flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 mt-0.5 shrink-0 text-rose-500" />
+              <div className={DesignTokens.description.alertBox}>
+                <AlertCircle className={DesignTokens.description.alertIcon} />
                 <div>
-                  <h4 className="text-sm font-semibold text-rose-400">
+                  <h4 className={DesignTokens.description.alertTitle}>
                     Обнаружено расхождение документации и кода
                   </h4>
-                  <p className="text-xs text-zinc-400 mt-1">
+                  <p className={DesignTokens.description.alertText}>
                     Найдено расхождений: {activeFindings.length || 2}. Откройте инбокс, чтобы сверить документацию с кодом и принять решение.
                   </p>
                 </div>
@@ -240,34 +241,34 @@ export function ServicePassportPage() {
             )}
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+          <div className={DesignTokens.findings.container}>
+            <div className={DesignTokens.findings.headerRow}>
+              <h4 className={DesignTokens.findings.headerTitle}>
                 АКТИВНЫЕ РАСХОЖДЕНИЯ ({activeFindings.length})
               </h4>
               <Link
                 to={`/findings?serviceId=${service.id}`}
-                className="text-xs font-medium text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors"
+                className={DesignTokens.findings.headerLink}
               >
                 Перейти к разбору в Инбокс
-                <ArrowRight className="h-3.5 w-3.5" />
+                <ArrowRight className={DesignTokens.findings.arrowIcon} />
               </Link>
             </div>
 
-            <div className="space-y-2">
+            <div className={DesignTokens.findings.list}>
               {activeFindings.length > 0 ? (
                 activeFindings.map((finding) => (
                   <div
                     key={finding.id}
                     onClick={() => navigate(`/findings?serviceId=${service.id}&findingId=${finding.id}`)}
-                    className="rounded-lg border border-zinc-800 bg-zinc-900/70 p-3.5 flex items-center justify-between gap-4 hover:border-zinc-700 hover:bg-zinc-800/40 cursor-pointer transition-colors"
+                    className={DesignTokens.findings.row}
                   >
-                    <div className="flex items-center gap-3 min-w-0">
+                    <div className={DesignTokens.findings.leftCol}>
                       <FindingSeverityBadge severity={finding.severity} />
-                      <span className="font-mono text-xs text-zinc-400 shrink-0">{finding.id}</span>
-                      <span className="text-sm text-zinc-200 truncate">{finding.title}</span>
+                      <span className={DesignTokens.findings.id}>{finding.id}</span>
+                      <span className={DesignTokens.findings.title}>{finding.title}</span>
                     </div>
-                    <span className="text-xs text-zinc-500 shrink-0">
+                    <span className={DesignTokens.findings.timeAgo}>
                       {formatTimeAgo(finding.createdAt)}
                     </span>
                   </div>
