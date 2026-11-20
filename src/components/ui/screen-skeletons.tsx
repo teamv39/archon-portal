@@ -32,7 +32,7 @@ export function CatalogTableSkeleton({ rows = 8 }: { rows?: number }) {
 
 export function PassportSkeleton() {
   return (
-    <div className="space-y-6 max-w-5xl">
+    <div className="space-y-6 w-full">
       <div className="flex items-center gap-3">
         <Skeleton className="h-9 w-24" />
         <Skeleton className="h-6 w-48" />

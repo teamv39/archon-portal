@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { ErrorState } from "@/components/ui/error-state"
 import { ArchitectureMapSkeleton } from "@/components/ui/screen-skeletons"
+import { DesignTokens } from "@/config/designTokens"
 import {
   Network,
   Search,
@@ -38,11 +39,11 @@ const nodeTypes = {
 
 // MiniMap node color mapper (static to prevent re-allocation on pan/zoom)
 const miniMapNodeColor = (node: Node) => {
-  if (node.data?.driftStatus === "drift_detected") return "#f43f5e"
-  if (node.data?.driftStatus === "in_sync") return "#10b981"
-  if (node.data?.type === "database") return "#38bdf8"
-  if (node.data?.type === "queue") return "#f59e0b"
-  return "#6366f1"
+  if (node.data?.driftStatus === "drift_detected") return DesignTokens.c4.minimapColors.drift
+  if (node.data?.driftStatus === "in_sync") return DesignTokens.c4.minimapColors.sync
+  if (node.data?.type === "database") return DesignTokens.c4.minimapColors.database
+  if (node.data?.type === "queue") return DesignTokens.c4.minimapColors.queue
+  return DesignTokens.c4.minimapColors.service
 }
 
 // Preset layout coordinates for C4 Containers view with generous spacing for labels

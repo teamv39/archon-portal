@@ -10,6 +10,7 @@ import {
   Globe,
 } from "lucide-react"
 import type { DiagramNodeType, DriftStatus } from "@/types/diagram"
+import { DesignTokens } from "@/config/designTokens"
 
 export interface C4NodeData {
   title: string
@@ -31,16 +32,16 @@ function C4NodeComponent({ data, selected }: NodeProps) {
   const getNodeIcon = () => {
     switch (type) {
       case "database":
-        return <Database className="h-4 w-4 text-sky-400" />
+        return <Database className={`h-4 w-4 ${DesignTokens.c4.typeColors.database}`} />
       case "queue":
-        return <Radio className="h-4 w-4 text-amber-400" />
+        return <Radio className={`h-4 w-4 ${DesignTokens.c4.typeColors.queue}`} />
       case "system":
-        return <Globe className="h-4 w-4 text-indigo-400" />
+        return <Globe className={`h-4 w-4 ${DesignTokens.c4.typeColors.system}`} />
       case "component":
-        return <Layers className="h-4 w-4 text-violet-400" />
+        return <Layers className={`h-4 w-4 ${DesignTokens.c4.typeColors.component}`} />
       case "service":
       default:
-        return <Server className="h-4 w-4 text-indigo-400" />
+        return <Server className={`h-4 w-4 ${DesignTokens.c4.typeColors.service}`} />
     }
   }
 
@@ -60,17 +61,21 @@ function C4NodeComponent({ data, selected }: NodeProps) {
     }
   }
 
+  const stateStyle = selected
+    ? DesignTokens.c4.node.selected
+    : isDrift
+    ? DesignTokens.c4.node.drift
+    : isSync
+    ? DesignTokens.c4.node.sync
+    : DesignTokens.c4.node.default
+
   return (
     <div
-      className={`relative min-w-[220px] max-w-[260px] rounded-xl border bg-zinc-900 p-3.5 shadow-lg select-none cursor-pointer will-change-transform transition-[border-color,box-shadow] duration-150 ${
-        selected
-          ? "ring-2 ring-indigo-500 border-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.35)]"
-          : isDrift
-          ? "border-rose-500/70 shadow-[0_0_15px_rgba(244,63,94,0.2)] hover:border-rose-400"
-          : isSync
-          ? "border-zinc-800 hover:border-emerald-500/50 hover:shadow-[0_0_12px_rgba(16,185,129,0.15)]"
-          : "border-zinc-800 hover:border-zinc-700"
-      }`}
+      className={`${DesignTokens.c4.node.base} ${DesignTokens.c4.node.dimensions} ${stateStyle}`}
+      style={{
+        width: "var(--dev-c4-width, 240px)",
+        boxShadow: isDrift ? "var(--dev-drift-glow, 0 0 15px rgba(244,63,94,0.2))" : undefined,
+      }}
     >
       {/* Invisible anchor handles on all 4 sides for collision-free edge routing */}
       <Handle
@@ -131,41 +136,41 @@ function C4NodeComponent({ data, selected }: NodeProps) {
       />
 
       {/* Top Meta: Type & Tier */}
-      <div className="flex items-center justify-between gap-1.5 mb-2">
-        <div className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-400">
+      <div className={DesignTokens.c4.meta.row}>
+        <div className={DesignTokens.c4.meta.typeLabel}>
           {getNodeIcon()}
           <span>{getTypeLabel()}</span>
         </div>
 
         {tier !== undefined && (
-          <span className="text-[10px] font-mono font-semibold px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 border border-indigo-500/30">
+          <span className={DesignTokens.c4.meta.tierBadge}>
             Tier {tier}
           </span>
         )}
       </div>
 
       {/* Node Title */}
-      <div className="font-semibold text-sm text-zinc-100 leading-tight truncate mb-2">
+      <div className={DesignTokens.c4.title.text}>
         {title}
       </div>
 
       {/* Status Bar */}
-      <div className="flex items-center justify-between pt-2 border-t border-zinc-800/80 text-[11px]">
+      <div className={DesignTokens.c4.footer.row}>
         {isDrift ? (
-          <div className="flex items-center gap-1 font-medium text-rose-400">
-            <AlertTriangle className="h-3 w-3" />
+          <div className={DesignTokens.c4.footer.drift}>
+            <AlertTriangle className={DesignTokens.c4.footer.icon} />
             <span>Дрейф обнаружен</span>
           </div>
         ) : isSync ? (
-          <div className="flex items-center gap-1 font-medium text-emerald-400">
-            <CheckCircle2 className="h-3 w-3" />
+          <div className={DesignTokens.c4.footer.sync}>
+            <CheckCircle2 className={DesignTokens.c4.footer.icon} />
             <span>В актуале</span>
           </div>
         ) : (
-          <span className="text-zinc-500 font-mono text-[10px]">{nodeData.description || "Инфраструктура"}</span>
+          <span className={DesignTokens.c4.footer.infra}>{nodeData.description || "Инфраструктура"}</span>
         )}
 
-        <span className="text-zinc-500 font-mono text-[10px]">
+        <span className={DesignTokens.c4.footer.counter}>
           {nodeData.incomingCount !== undefined && nodeData.outgoingCount !== undefined
             ? `↓${nodeData.incomingCount} ↑${nodeData.outgoingCount}`
             : ""}

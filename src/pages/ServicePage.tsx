@@ -143,7 +143,7 @@ export function ServicesPage() {
         accessorKey: "stack",
         header: "Язык / Стек",
         cell: ({ row }) => (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary text-secondary-foreground">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-secondary text-secondary-foreground">
             <Cpu className="h-3 w-3 text-muted-foreground" />
             {row.original.stack}
           </div>
@@ -385,7 +385,14 @@ export function ServicesPage() {
                     className="cursor-pointer transition-colors hover:bg-muted/60 data-[state=selected]:bg-muted"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-3">
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          paddingTop: "var(--catalog-row-padding, 0.5rem)",
+                          paddingBottom: "var(--catalog-row-padding, 0.5rem)",
+                          fontSize: "var(--catalog-text-size, 13px)",
+                        }}
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
