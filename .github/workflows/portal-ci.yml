@@ -8,6 +8,10 @@ on:
       - 'feature/**'
     tags:
       - 'v*.*.*'
+  pull_request:
+    branches:
+      - main
+      - dev
 
 permissions:
   contents: read
