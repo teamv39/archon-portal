@@ -1,51 +1,10 @@
-import * as React from "react"
-import { Search, LogIn } from "lucide-react"
+import { useAuth } from "@/hooks/useAuth"
+import { Search, LogOut, User } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 
 export function Header() {
-    const [isLoggedIn, setIsLoggedIn] = React.useState<boolean | null>(null)
-    const [isLoggingIn, setIsLoggingIn] = React.useState(false)
-
-    const handleLogin = React.useCallback(async () => {
-        setIsLoggingIn(true)
-        try {
-            const res = await fetch("/api/auth/login", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ username: "admin", password: "password123" }),
-            })
-            if (res.ok) {
-                setIsLoggedIn(true)
-                window.location.reload()
-            }
-        } catch {
-            // ignore
-        } finally {
-            setIsLoggingIn(false)
-        }
-    }, [])
-
-    React.useEffect(() => {
-        let mounted = true
-        fetch("/api/auth/me")
-            .then((res) => {
-                if (!mounted) return
-                if (res.ok) {
-                    setIsLoggedIn(true)
-                } else {
-                    setIsLoggedIn(false)
-                    handleLogin()
-                }
-            })
-            .catch(() => {
-                if (mounted) setIsLoggedIn(false)
-            })
-
-        return () => {
-            mounted = false
-        }
-    }, [handleLogin])
+    const { user, logout } = useAuth()
 
     return (
         <header className="h-14 border-b border-border bg-card/50 backdrop-blur px-6 flex items-center justify-between">
@@ -56,23 +15,29 @@ export function Header() {
                     className="pl-9 h-9 bg-background/50"
                 />
             </div>
-            <div className="flex items-center gap-3">
-                {isLoggedIn ? (
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="font-medium text-foreground">Кирилл (admin)</span>
+            <div className="flex items-center gap-4">
+                {user && (
+                    <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-2 text-xs">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <div className="flex items-center gap-1.5 font-mono text-zinc-300">
+                                <User className="w-3.5 h-3.5 text-zinc-500" />
+                                <span className="font-semibold text-foreground">{user.username}</span>
+                                <span className="text-[10px] text-zinc-500">({user.role})</span>
+                            </div>
+                        </div>
+
+                        <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => logout()}
+                            title="Выйти из системы"
+                            className="h-8 px-2 text-xs text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                        >
+                            <LogOut className="h-3.5 w-3.5 mr-1.5" />
+                            <span>Выйти</span>
+                        </Button>
                     </div>
-                ) : (
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={handleLogin}
-                        disabled={isLoggingIn}
-                        className="h-8 text-xs border-indigo-500/40 text-indigo-400 hover:bg-indigo-500/10"
-                    >
-                        <LogIn className="h-3.5 w-3.5 mr-1.5" />
-                        {isLoggingIn ? "Вход..." : "Войти как admin"}
-                    </Button>
                 )}
             </div>
         </header>
