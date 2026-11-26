@@ -18,6 +18,30 @@ export class ApiError extends Error {
   }
 }
 
+export type ApiFetchOptions = RequestInit & {
+  skipUnauthorizedNotify?: boolean
+}
+
+type UnauthorizedHandler = () => void
+const unauthorizedListeners = new Set<UnauthorizedHandler>()
+
+export function onUnauthorized(handler: UnauthorizedHandler): () => void {
+  unauthorizedListeners.add(handler)
+  return () => {
+    unauthorizedListeners.delete(handler)
+  }
+}
+
+export function notifyUnauthorized(): void {
+  unauthorizedListeners.forEach((handler) => {
+    try {
+      handler()
+    } catch {
+      // ignore handler errors
+    }
+  })
+}
+
 const STATUS_MESSAGES: Record<number, { title: string; description: string }> = {
   400: { title: 'Некорректный запрос', description: 'Сервер не смог обработать переданные параметры.' },
   401: { title: 'Требуется авторизация', description: 'Срок действия сессии истек или вы не авторизованы.' },
@@ -60,10 +84,13 @@ export function getSafeErrorMessage(error: unknown): {
   }
 }
 
-export async function apiFetch<T>(input: RequestInfo | URL, init?: RequestInit): Promise<T> {
+export async function apiFetch<T>(input: RequestInfo | URL, init?: ApiFetchOptions): Promise<T> {
   let response: Response
   try {
-    response = await fetch(input, init)
+    response = await fetch(input, {
+      credentials: 'include',
+      ...init,
+    })
   } catch {
     throw new ApiError({
       type: 'about:blank',
@@ -75,16 +102,31 @@ export async function apiFetch<T>(input: RequestInfo | URL, init?: RequestInit):
   }
 
   if (!response.ok) {
+    if (response.status === 401 && !init?.skipUnauthorizedNotify) {
+      notifyUnauthorized()
+    }
+
     let problem: ProblemDetails
     try {
       const contentType = response.headers.get('content-type') || ''
       if (contentType.includes('json')) {
         const body = await response.json()
+        let detail = body.detail || ''
+        if (!detail && typeof body.error === 'string') {
+          detail = body.error
+        }
+        if (!detail && Array.isArray(body.errors) && body.errors.length > 0) {
+          detail = body.errors[0]?.message || 'Некорректные параметры запроса'
+        }
+        if (!detail && typeof body.message === 'string') {
+          detail = body.message
+        }
+
         problem = {
           type: body.type || 'about:blank',
           title: body.title || response.statusText,
           status: body.status || response.status,
-          detail: body.detail || '',
+          detail,
           instance: body.instance || (typeof input === 'string' ? input : undefined),
         }
       } else {
