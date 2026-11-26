@@ -23,14 +23,14 @@ import {
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Skeleton } from "@/components/ui/skeleton"
+import { EmptyState } from "@/components/ui/empty-state"
+import { ErrorState } from "@/components/ui/error-state"
+import { CatalogTableSkeleton } from "@/components/ui/screen-skeletons"
 import { CustomSelect } from "@/components/ui/custom-select"
 import {
   Search,
   ArrowUpDown,
-  SearchX,
   AlertTriangle,
-  RefreshCw,
   CheckCircle2,
   GitFork,
   Cpu,
@@ -39,7 +39,7 @@ import {
 
 export function ServicesPage() {
   const navigate = useNavigate()
-  const { data: services = [], isLoading, isError, refetch } = useServices()
+  const { data: services = [], isLoading, isError, error, refetch } = useServices()
 
   // State for TanStack Table
   const [sorting, setSorting] = React.useState<SortingState>([])
@@ -143,7 +143,7 @@ export function ServicesPage() {
         accessorKey: "stack",
         header: "Язык / Стек",
         cell: ({ row }) => (
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-secondary text-secondary-foreground">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-mono font-medium bg-secondary text-secondary-foreground">
             <Cpu className="h-3 w-3 text-muted-foreground" />
             {row.original.stack}
           </div>
@@ -350,16 +350,8 @@ export function ServicesPage() {
       <div className="rounded-lg border bg-card shadow-sm overflow-hidden">
         {/* Error State */}
         {isError && (
-          <div className="p-8 text-center flex flex-col items-center justify-center">
-            <AlertTriangle className="h-10 w-10 text-destructive mb-3" />
-            <h3 className="font-semibold text-base mb-1">Не удалось загрузить сервисы</h3>
-            <p className="text-sm text-muted-foreground max-w-md mb-4">
-              Проверьте, запущен ли mock API сервер BFF (Fastify на порту 5000).
-            </p>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
-              <RefreshCw className="h-3.5 w-3.5 mr-2" />
-              Повторить попытку
-            </Button>
+          <div className="p-6">
+            <ErrorState error={error} onRetry={() => refetch()} />
           </div>
         )}
 
@@ -383,28 +375,7 @@ export function ServicesPage() {
             <TableBody>
               {/* Loading State: Skeletons */}
               {isLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <TableRow key={`skeleton-${i}`}>
-                    <TableCell>
-                      <div className="space-y-1.5">
-                        <Skeleton className="h-4 w-44" />
-                        <Skeleton className="h-3 w-24" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-32" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-28 rounded" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-5 w-24 rounded-full" />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton className="h-4 w-12" />
-                    </TableCell>
-                  </TableRow>
-                ))
+                <CatalogTableSkeleton rows={6} />
               ) : table.getRowModel().rows.length > 0 ? (
                 /* Service rows */
                 table.getRowModel().rows.map((row) => (
@@ -414,7 +385,14 @@ export function ServicesPage() {
                     className="cursor-pointer transition-colors hover:bg-muted/60 data-[state=selected]:bg-muted"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="py-3">
+                      <TableCell
+                        key={cell.id}
+                        style={{
+                          paddingTop: "var(--catalog-row-padding, 0.5rem)",
+                          paddingBottom: "var(--catalog-row-padding, 0.5rem)",
+                          fontSize: "var(--catalog-text-size, 13px)",
+                        }}
+                      >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
                       </TableCell>
                     ))}
@@ -423,32 +401,18 @@ export function ServicesPage() {
               ) : (
                 /* Empty State */
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-72 text-center">
-                    <div className="flex flex-col items-center justify-center space-y-3 py-6">
-                      <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
-                        <SearchX className="h-6 w-6" />
-                      </div>
-                      <div className="space-y-1">
-                        <p className="font-semibold text-base">Сервисы не найдены</p>
-                        <p className="text-xs text-muted-foreground max-w-sm">
-                          {isFiltered
-                            ? "По заданным условиям фильтрации ничего не найдено. Попробуйте изменить запрос или сбросить фильтры."
-                            : "В каталоге пока нет зарегистрированных микросервисов."}
-                        </p>
-                      </div>
-                      {isFiltered && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleResetFilters}
-                          className="mt-2 text-xs"
-                        >
-                          Сбросить фильтры
-                        </Button>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
+                  <TableCell colSpan={columns.length} className="p-6">
+                    <EmptyState
+                      title={isFiltered ? "Сервисы по заданным критериям не найдены" : "В организации пока нет подключенных сервисов"}
+                      description={
+                        isFiltered
+                          ? "Попробуйте изменить параметры поиска или сбросить фильтры."
+                          : "Подключите репозитории через GitHub App для автоматического построения каталога."
+                      }
+                      actionLabel={isFiltered ? "Сбросить фильтры" : undefined}
+                      onAction={isFiltered ? handleResetFilters : undefined}
+                    />
+                  </TableCell></TableRow>
               )}
             </TableBody>
           </Table>
