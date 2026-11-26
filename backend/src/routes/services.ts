@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyPluginAsync } from 'fastify'
 import { readJsonFixture } from '../utils/dataFile.js'
 import type { Service, Contract, MockDataset, MockServiceDetails } from '../types/api.js'
+import { CoreServiceError } from '../utils/errors.js'
 
 function getServices(): Service[] {
   const data = readJsonFixture<MockDataset>('mock_mcp_data.json')
@@ -51,7 +52,7 @@ async function getAggregatedService(
   if (!coreService) {
     return null
   }
-  const details = readJsonFixture<MockServiceDetails>('mock_service_details.json')
+  const details = readJsonFixture<MockServiceDetails>('mock_service_details.json') // MOCK
   const hasCriticalFindings = (findings ?? []).some(
     (f) => f.severity === 'CRITICAL' && f.status !== 'RISK_ACCEPTED'
   )
@@ -69,32 +70,40 @@ async function getAggregatedService(
 
 export const servicesRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get('/services', async () => {
-    return getServices()
+    if (fastify.config.MOCK_MODE) {
+      return getServices()
+    }
+
+    const services = await fastify.coreClient.getServices()
+
+    return services
   })
 
-    fastify.get<{ Params: { id: string } }>('/services/:id', async (request, reply) => {
+  fastify.get<{ Params: { id: string } }>('/services/:id', async (request, reply) => {
     const { id } = request.params
 
     if (fastify.config.MOCK_MODE) {
       const services = getServices()
       const service = services.find((s) => s.id === id)
       if (!service) {
-        reply.status(404)
-        return { error: 'Not Found', message: `Сервис ${id} не найден` }
+        throw new CoreServiceError(404, `Сервис ${id} не найден`, 'Not Found')
       }
       return service
     }
 
     const service = await getAggregatedService(fastify, id)
     if (!service) {
-      reply.status(404)
-      return { error: 'Not Found', message: `Сервис ${id} не найден` }
+      throw new CoreServiceError(404, `Сервис ${id} не найден`, 'Not Found')
     }
     return service
   })
 
   fastify.get('/contracts', async () => {
-    const data = readJsonFixture<MockDataset>('mock_mcp_data.json')
-    return data.contracts
+    if (fastify.config.MOCK_MODE) {
+      const data = readJsonFixture<MockDataset>('mock_mcp_data.json')
+      return data.contracts
+    }
+
+    return null
   })
 }
