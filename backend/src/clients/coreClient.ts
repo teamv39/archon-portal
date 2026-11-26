@@ -58,7 +58,8 @@ export class CoreServiceClient {
         return this.request<Service>(`/api/v1/services/${encodeURIComponent(id)}`)
     }
     async getServices() {
-        return this.request<Service[]>('/api/v1/services')
+        const result = await this.request<Service[]>('/api/v1/services')
+        return result ?? []
     }
     async getC4Diagram() {
         return this.request<DiagramResponse>('/api/v1/diagrams/c4')
@@ -70,7 +71,8 @@ export class CoreServiceClient {
         if (params?.severity) query.set('severity', params.severity)
         const qs = query.toString()
 
-        return this.request<Finding[]>(`/api/v1/findings${qs ? `?${qs}` : ''}`)
+        const result = await this.request<Finding[]>(`/api/v1/findings${qs ? `?${qs}` : ''}`)
+        return result ?? []
     }
 
     async close() {
@@ -78,8 +80,8 @@ export class CoreServiceClient {
     }
 }
 
-interface FindingsFilter {
-    serviceId?: string
-    status?: string
-    severity?: string
+export interface FindingsFilter {
+    serviceId?: string | undefined
+    status?: string | undefined
+    severity?: string | undefined
 }
